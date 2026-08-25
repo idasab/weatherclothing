@@ -1,9 +1,10 @@
+import { GarmentIconName } from './garment-icon-name';
 import { HourForecast, WeatherSnapshot } from './weather.models';
 
 export type UmbrellaLevel = 'none' | 'maybe' | 'yes' | 'raincoat' | 'hood';
 
 export interface Garment {
-  icon: string;
+  icon: GarmentIconName;
   label: string;
 }
 
@@ -45,12 +46,12 @@ const BANDS: Band[] = [
     band: 'Extremkyla',
     summary: 'Täck all bar hud och håll utetiden kort.',
     layers: [
-      { icon: '🧦', label: 'Ullsockor' },
-      { icon: '🩲', label: 'Termounderställ' },
-      { icon: '🧶', label: 'Ulltröja eller fleece' },
-      { icon: '🧥', label: 'Vinterjacka' },
-      { icon: '👖', label: 'Termobyxor' },
-      { icon: '🥾', label: 'Vinterkängor' },
+      { icon: 'socks', label: 'Ullsockor' },
+      { icon: 'base-layer', label: 'Termounderställ' },
+      { icon: 'knit', label: 'Ulltröja eller fleece' },
+      { icon: 'winter-jacket', label: 'Vinterjacka' },
+      { icon: 'trousers', label: 'Termobyxor' },
+      { icon: 'boots', label: 'Vinterkängor' },
     ],
   },
   {
@@ -58,11 +59,11 @@ const BANDS: Band[] = [
     band: 'Sträng kyla',
     summary: 'Ordentlig vinterklädsel, flera lager.',
     layers: [
-      { icon: '🩲', label: 'Termounderställ' },
-      { icon: '🧶', label: 'Ulltröja eller fleece' },
-      { icon: '🧥', label: 'Vinterjacka' },
-      { icon: '👖', label: 'Fodrade byxor' },
-      { icon: '🥾', label: 'Vinterkängor' },
+      { icon: 'base-layer', label: 'Termounderställ' },
+      { icon: 'knit', label: 'Ulltröja eller fleece' },
+      { icon: 'winter-jacket', label: 'Vinterjacka' },
+      { icon: 'trousers', label: 'Fodrade byxor' },
+      { icon: 'boots', label: 'Vinterkängor' },
     ],
   },
   {
@@ -70,11 +71,11 @@ const BANDS: Band[] = [
     band: 'Minusgrader',
     summary: 'Vinterjacka och täck händer och huvud.',
     layers: [
-      { icon: '👕', label: 'Långärmad tröja' },
-      { icon: '🧶', label: 'Stickad tröja' },
-      { icon: '🧥', label: 'Vinterjacka' },
-      { icon: '👖', label: 'Långbyxor' },
-      { icon: '🥾', label: 'Varma skor' },
+      { icon: 'long-sleeve', label: 'Långärmad tröja' },
+      { icon: 'knit', label: 'Stickad tröja' },
+      { icon: 'winter-jacket', label: 'Vinterjacka' },
+      { icon: 'trousers', label: 'Långbyxor' },
+      { icon: 'boots', label: 'Varma skor' },
     ],
   },
   {
@@ -82,11 +83,11 @@ const BANDS: Band[] = [
     band: 'Kallt',
     summary: 'Vadderad jacka och ett lager under.',
     layers: [
-      { icon: '👕', label: 'Långärmad tröja' },
-      { icon: '🧶', label: 'Tröja eller hoodie' },
-      { icon: '🧥', label: 'Vadderad jacka' },
-      { icon: '👖', label: 'Långbyxor' },
-      { icon: '👟', label: 'Täckta skor' },
+      { icon: 'long-sleeve', label: 'Långärmad tröja' },
+      { icon: 'hoodie', label: 'Tröja eller hoodie' },
+      { icon: 'winter-jacket', label: 'Vadderad jacka' },
+      { icon: 'trousers', label: 'Långbyxor' },
+      { icon: 'shoes', label: 'Täckta skor' },
     ],
   },
   {
@@ -94,11 +95,11 @@ const BANDS: Band[] = [
     band: 'Kyligt',
     summary: 'Jacka på, gärna med en tröja under.',
     layers: [
-      { icon: '👕', label: 'Långärmad tröja' },
-      { icon: '🧶', label: 'Tröja eller kofta' },
-      { icon: '🧥', label: 'Jacka' },
-      { icon: '👖', label: 'Långbyxor' },
-      { icon: '👟', label: 'Täckta skor' },
+      { icon: 'long-sleeve', label: 'Långärmad tröja' },
+      { icon: 'knit', label: 'Tröja eller kofta' },
+      { icon: 'jacket', label: 'Jacka' },
+      { icon: 'trousers', label: 'Långbyxor' },
+      { icon: 'shoes', label: 'Täckta skor' },
     ],
   },
   {
@@ -106,10 +107,10 @@ const BANDS: Band[] = [
     band: 'Svalt',
     summary: 'Tunn jacka räcker en bit.',
     layers: [
-      { icon: '👕', label: 'Långärmad tröja' },
-      { icon: '🧥', label: 'Tunn jacka eller kofta' },
-      { icon: '👖', label: 'Långbyxor' },
-      { icon: '👟', label: 'Sneakers' },
+      { icon: 'long-sleeve', label: 'Långärmad tröja' },
+      { icon: 'jacket', label: 'Tunn jacka eller kofta' },
+      { icon: 'trousers', label: 'Långbyxor' },
+      { icon: 'shoes', label: 'Sneakers' },
     ],
   },
   {
@@ -117,10 +118,10 @@ const BANDS: Band[] = [
     band: 'Milt',
     summary: 'Skjortväder med något tunt över.',
     layers: [
-      { icon: '👕', label: 'T-shirt eller skjorta' },
-      { icon: '🧥', label: 'Tunn kofta över axeln' },
-      { icon: '👖', label: 'Långbyxor' },
-      { icon: '👟', label: 'Sneakers' },
+      { icon: 't-shirt', label: 'T-shirt eller skjorta' },
+      { icon: 'cardigan', label: 'Tunn kofta över axeln' },
+      { icon: 'trousers', label: 'Långbyxor' },
+      { icon: 'shoes', label: 'Sneakers' },
     ],
   },
   {
@@ -128,9 +129,9 @@ const BANDS: Band[] = [
     band: 'Varmt',
     summary: 'Kortärmat hela dagen.',
     layers: [
-      { icon: '👕', label: 'T-shirt' },
-      { icon: '👖', label: 'Tunna byxor eller shorts' },
-      { icon: '👟', label: 'Lätta skor' },
+      { icon: 't-shirt', label: 'T-shirt' },
+      { icon: 'trousers', label: 'Tunna byxor eller shorts' },
+      { icon: 'shoes', label: 'Lätta skor' },
     ],
   },
   {
@@ -138,9 +139,9 @@ const BANDS: Band[] = [
     band: 'Riktigt varmt',
     summary: 'Lätt och luftigt, håll dig i skuggan.',
     layers: [
-      { icon: '👕', label: 'Tunn t-shirt eller linne' },
-      { icon: '🩳', label: 'Shorts eller klänning' },
-      { icon: '🩴', label: 'Sandaler' },
+      { icon: 'tank-top', label: 'Tunn t-shirt eller linne' },
+      { icon: 'shorts', label: 'Shorts eller klänning' },
+      { icon: 'sandals', label: 'Sandaler' },
     ],
   },
   {
@@ -148,9 +149,9 @@ const BANDS: Band[] = [
     band: 'Hetta',
     summary: 'Undvik middagssolen och drick mer än du tror.',
     layers: [
-      { icon: '🎽', label: 'Linne i tunt tyg' },
-      { icon: '🩳', label: 'Shorts eller klänning' },
-      { icon: '🩴', label: 'Sandaler' },
+      { icon: 'tank-top', label: 'Linne i tunt tyg' },
+      { icon: 'shorts', label: 'Shorts eller klänning' },
+      { icon: 'sandals', label: 'Sandaler' },
     ],
   },
 ];
@@ -258,13 +259,13 @@ function umbrellaVerdict(snapshot: WeatherSnapshot, outlook: RainOutlook): Umbre
 function rainGearFor(level: UmbrellaLevel): Garment | null {
   switch (level) {
     case 'yes':
-      return { icon: '☔', label: 'Paraply' };
+      return { icon: 'umbrella', label: 'Paraply' };
     case 'maybe':
-      return { icon: '🌂', label: 'Litet paraply' };
+      return { icon: 'umbrella', label: 'Litet paraply' };
     case 'raincoat':
-      return { icon: '🧥', label: 'Regnjacka' };
+      return { icon: 'hooded-jacket', label: 'Regnjacka' };
     case 'hood':
-      return { icon: '🧢', label: 'Jacka med luva' };
+      return { icon: 'hooded-jacket', label: 'Jacka med luva' };
     default:
       return null;
   }
@@ -285,31 +286,31 @@ function extrasFor(
   }
 
   if (feels < 0) {
-    extras.push({ icon: '🧣', label: 'Halsduk' });
+    extras.push({ icon: 'scarf', label: 'Halsduk' });
   }
   if (feels < 5) {
-    extras.push({ icon: '🧤', label: feels < -8 ? 'Tumvantar' : 'Vantar' });
+    extras.push({ icon: 'mittens', label: feels < -8 ? 'Tumvantar' : 'Vantar' });
   }
   if (feels < 8) {
-    extras.push({ icon: '🧢', label: 'Mössa' });
+    extras.push({ icon: 'beanie', label: 'Mössa' });
   }
   if (snapshot.windSpeed >= 8 && umbrella.level !== 'raincoat') {
-    extras.push({ icon: '🪁', label: 'Vindtätt ytterlager' });
+    extras.push({ icon: 'jacket', label: 'Vindtätt ytterlager' });
   }
   if (outlook.totalPrecipitation >= 0.3 && feels < 14) {
-    extras.push({ icon: '🥾', label: 'Vattentäta skor' });
+    extras.push({ icon: 'boots', label: 'Vattentäta skor' });
   }
   if (snapshot.isDay && snapshot.uvIndexMax >= 3) {
-    extras.push({ icon: '🕶️', label: 'Solglasögon' });
+    extras.push({ icon: 'sunglasses', label: 'Solglasögon' });
   }
   if (snapshot.uvIndexMax >= 5) {
-    extras.push({ icon: '🧴', label: 'Solskyddsfaktor' });
+    extras.push({ icon: 'sunscreen', label: 'Solskyddsfaktor' });
   }
   if (snapshot.uvIndexMax >= 7) {
-    extras.push({ icon: '👒', label: 'Keps eller hatt' });
+    extras.push({ icon: 'sun-hat', label: 'Keps eller hatt' });
   }
   if (feels >= 25) {
-    extras.push({ icon: '💧', label: 'Vattenflaska' });
+    extras.push({ icon: 'bottle', label: 'Vattenflaska' });
   }
 
   return extras;

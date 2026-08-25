@@ -73,7 +73,10 @@ private struct GarmentChip: View {
 
     var body: some View {
         HStack(spacing: 5) {
-            Text(garment.icon).font(.system(size: 11))
+            // SF Symbols i stället för emoji: de följer textens vikt och färg.
+            Image(systemName: garment.icon)
+                .font(.system(size: 10))
+                .foregroundStyle(Palette.ink)
             Text(garment.label).font(.system(size: 11)).foregroundStyle(Palette.ink)
         }
         .padding(.horizontal, 7)

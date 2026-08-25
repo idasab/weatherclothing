@@ -1,7 +1,7 @@
 """Genererar appens ikoner i alla storlekar.
 
-Motivet är ett par oversize solglasögon i grafit mot en ljust gul botten, med
-ett vitt blänk över glasen. Körs med `python tools/generate-icons.py` och
+Motivet är ett par solglasögon i legostil — platta, nästan kvadratiska glas i
+grafit mot en ljust gul botten. Körs med `python tools/generate-icons.py` och
 skriver över filerna i src/assets/icons. Inga beroenden utöver
 standardbiblioteket.
 """
@@ -23,19 +23,21 @@ YELLOW_BOTTOM = (232, 191, 112)
 # Supersampling per axel. Ikonerna har hårda kanter, så det behövs för mjuka linjer.
 SAMPLES = 3
 
-LENS_TOP, LENS_BOTTOM = 0.315, 0.690
-LEFT_LENS = (0.112, 0.478)
-RIGHT_LENS = (0.522, 0.888)
-LENS_CORNER = 0.150
+# Legogubbens glasögon: platta, nästan kvadratiska glas, rak brygga och raka
+# skalmstumpar. Enkelheten är hela poängen — inga vinklar, inga detaljer.
+LENS_TOP, LENS_BOTTOM = 0.350, 0.650
+LEFT_LENS = (0.130, 0.455)
+RIGHT_LENS = (0.545, 0.870)
+LENS_CORNER = 0.075
+ARM_TOP, ARM_BOTTOM = 0.404, 0.474
+BRIDGE_TOP, BRIDGE_BOTTOM = 0.452, 0.548
 
-# Blänket: två diagonala streck per glas, angivna relativt glasets mitt som
-# ((startpunkt), (slutpunkt), halv bredd). Styrkan är hur mycket vitt som
-# blandas in — högre än så här och det börjar se ut som smuts i liten storlek.
+# Inget blänk: legostilen är platt. Vill du ha det tillbaka räcker det att
+# sätta GLINT_STRENGTH till 0.6 igen.
 GLINT_STROKES = (
-    ((-0.120, 0.015), (-0.045, -0.095), 0.027),
-    ((-0.050, 0.052), (0.005, -0.028), 0.014),
+    ((-0.075, -0.030), (-0.030, -0.030), 0.030),
 )
-GLINT_STRENGTH = 0.62
+GLINT_STRENGTH = 0.0
 GLINT_FEATHER = 0.006
 
 
@@ -66,12 +68,10 @@ def in_lens(x, y, lens):
 
 
 def in_glasses(x, y):
-    """Två stora rundade glas som nästan möts, kort brygga och små skalmflikar."""
-    if distance_to_segment(x, y, 0.125, 0.375, 0.052, 0.338) <= 0.023:
+    """Två nästan kvadratiska glas, rak brygga och raka skalmstumpar."""
+    if ARM_TOP <= y <= ARM_BOTTOM and (0.038 <= x <= LEFT_LENS[0] or RIGHT_LENS[1] <= x <= 0.962):
         return True
-    if distance_to_segment(x, y, 0.875, 0.375, 0.948, 0.338) <= 0.023:
-        return True
-    if 0.470 <= x <= 0.530 and 0.395 <= y <= 0.452:
+    if LEFT_LENS[1] <= x <= RIGHT_LENS[0] and BRIDGE_TOP <= y <= BRIDGE_BOTTOM:
         return True
     return in_lens(x, y, LEFT_LENS) or in_lens(x, y, RIGHT_LENS)
 

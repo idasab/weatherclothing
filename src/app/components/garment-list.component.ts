@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Garment } from '../core/clothing-advisor';
+import { GarmentIconComponent } from './garment-icon.component';
 
 @Component({
   selector: 'app-garment-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, GarmentIconComponent],
   template: `
     <section class="card">
       <header>
@@ -14,7 +15,7 @@ import { Garment } from '../core/clothing-advisor';
       </header>
       <ul>
         <li *ngFor="let garment of garments">
-          <span class="icon" aria-hidden="true">{{ garment.icon }}</span>
+          <app-garment-icon class="icon" [name]="garment.icon"></app-garment-icon>
           <span class="label">{{ garment.label }}</span>
         </li>
       </ul>
@@ -53,9 +54,9 @@ import { Garment } from '../core/clothing-advisor';
       }
 
       .icon {
-        font-size: 15px;
-        line-height: 1;
-        opacity: 0.85;
+        /* Ritas i 18 px: linjeteckningen kollapsar under det. */
+        color: var(--text);
+        opacity: 0.78;
       }
 
       .label {

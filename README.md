@@ -104,6 +104,34 @@ under 5°, halsduk under 0°, vindtätt ytterlager från 8 m/s, vattentäta skor
 nedbörd under 14°, och solglasögon, solskydd och hatt vid UV-index 3, 5
 respektive 7.
 
+## Plaggikonerna
+
+Klädråden visas med 24 egna linjeikoner i stället för emoji. Skälet är att
+emojiuppsättningen saknar kofta, hoodie och mössa, och att en enda rocksymbol
+fick stå för sex olika plagg — tunn kofta och vinterjacka såg identiska ut.
+
+Formerna ligger som SVG-banor i
+[garment-icon.component.ts](src/app/components/garment-icon.component.ts) och
+namnen som en union-typ i
+[garment-icon-name.ts](src/app/core/garment-icon-name.ts). Typen ligger i kärnan
+så klädlogiken kan namnge en ikon utan att bero på komponenten som ritar den, och
+så att kompilatorn fångar felstavningar.
+
+Tre saker att veta vid ändringar:
+
+- **Allt är `<path>`.** Inga `rect` eller `circle`, så komponenten kan rendera
+  vilken ikon som helst med samma `*ngFor`. Banorna binds via `[attr.d]`, inte
+  `innerHTML`, eftersom Angulars sanerare strippar SVG-element ur `innerHTML`.
+- **18 px är golvet.** Under det kollapsar linjeteckningen till en klump. Appen
+  ritade tidigare emoji i 15 px, och den storleken går inte att använda här.
+- **Skilj formerna strukturellt, inte i detaljer.** Koftan har öppen framkant,
+  jackan en mittsöm, huvjackan en huva, vinterjackan fickor. Fina detaljer som
+  skosnören försvinner i liten storlek och blir bara smuts.
+
+Widgeten kan inte dela SVG med webbappen, så den använder Apples SF Symbols i
+stället: `tshirt.fill`, `jacket.fill`, `coat.fill`, `hat.cap.fill` och så vidare.
+Namnen står i `Advice.swift`. Vädersymbolerna är fortfarande emoji i båda.
+
 ## Bygg som iOS-app
 
 Stegen fram till Xcode går att göra på Windows. Själva iOS-bygget kräver macOS
@@ -254,11 +282,14 @@ app i App Store, men i praktiken samma upplevelse på telefonen.
   står längst ner i appen.
 - **Ortsökningen** är reservvägen när positionen nekas eller inte finns, och
   fungerar även som vanlig sökfunktion.
-- **Ikonerna genereras** av [tools/generate-icons.py](tools/generate-icons.py),
-  som ritar motivet direkt till PNG utan bildbibliotek. Kör
-  `python tools/generate-icons.py` efter en ändring, så skrivs alla fyra
+- **Appikonen genereras** av [tools/generate-icons.py](tools/generate-icons.py),
+  som ritar motivet direkt till PNG utan bildbibliotek. Motivet är solglasögon i
+  legostil: platta, nästan kvadratiska glas, rak brygga och raka skalmstumpar.
+  Kör `python tools/generate-icons.py` efter en ändring, så skrivs alla fyra
   storlekar om: 180 för hemskärmen, 192 och 512 för manifestet och 1024 för
-  Xcode. Färgerna ligger som konstanter överst i filen. Ikonerna sparas utan
-  alfakanal, eftersom genomskinlighet blir svart på iOS.
+  Xcode. Färger och geometri ligger som konstanter överst i filen, och
+  `GLINT_STRENGTH` sätter du till 0.6 om du vill ha tillbaka det vita blänket i
+  glasen. Ikonerna sparas utan alfakanal, eftersom genomskinlighet blir svart på
+  iOS.
 - **Alltid ljust läge.** Paletten är låst till den ljusa, och `color-scheme:
   light` gör att systemet inte ritar mörka formulärkontroller i den.
