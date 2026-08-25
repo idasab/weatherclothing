@@ -4,6 +4,8 @@ import Foundation
 /// Speglar `WeatherCondition` i webbappen så råden blir identiska.
 struct Condition {
     let label: String
+    /// Namn på en SF Symbol. Ritas i multicolor, så solen blir gul och
+    /// dropparna blå precis som i webbappens egna vädersymboler.
     let symbol: String
     let clearSky: Bool
     let isRain: Bool
@@ -46,33 +48,33 @@ extension Condition {
     /// SMHI:s vädersymbol Wsymb2, 1–27.
     static func smhi(_ code: Int) -> Condition {
         switch code {
-        case 1: return dry("Klart", "☀️", clearSky: true)
-        case 2: return dry("Nästan klart", "🌤️", clearSky: true)
-        case 3: return dry("Växlande molnighet", "⛅")
-        case 4: return dry("Halvklart", "⛅")
-        case 5: return dry("Molnigt", "☁️")
-        case 6: return dry("Mulet", "☁️")
-        case 7: return dry("Dimma", "🌫️")
-        case 8: return rain("Lätta regnskurar", "🌦️")
-        case 9: return rain("Måttliga regnskurar", "🌧️")
-        case 10: return rain("Kraftiga regnskurar", "🌧️")
-        case 11: return thunder("Åskskurar", "⛈️")
-        case 12: return sleet("Lätta byar av snöblandat regn", "🌨️")
-        case 13: return sleet("Måttliga byar av snöblandat regn", "🌨️")
-        case 14: return sleet("Kraftiga byar av snöblandat regn", "🌨️")
-        case 15: return snow("Lätta snöbyar", "🌨️")
-        case 16: return snow("Måttliga snöbyar", "❄️")
-        case 17: return snow("Kraftiga snöbyar", "❄️")
-        case 18: return rain("Lätt regn", "🌦️")
-        case 19: return rain("Måttligt regn", "🌧️")
-        case 20: return rain("Kraftigt regn", "🌧️")
-        case 21: return thunder("Åska", "⛈️")
-        case 22: return sleet("Lätt snöblandat regn", "🌨️")
-        case 23: return sleet("Måttligt snöblandat regn", "🌨️")
-        case 24: return sleet("Kraftigt snöblandat regn", "🌨️")
-        case 25: return snow("Lätt snöfall", "🌨️")
-        case 26: return snow("Måttligt snöfall", "❄️")
-        case 27: return snow("Kraftigt snöfall", "❄️")
+        case 1: return dry("Klart", "sun.max.fill", clearSky: true)
+        case 2: return dry("Nästan klart", "sun.max.fill", clearSky: true)
+        case 3: return dry("Växlande molnighet", "cloud.sun.fill")
+        case 4: return dry("Halvklart", "cloud.sun.fill")
+        case 5: return dry("Molnigt", "cloud.fill")
+        case 6: return dry("Mulet", "cloud.fill")
+        case 7: return dry("Dimma", "cloud.fog.fill")
+        case 8: return rain("Lätta regnskurar", "cloud.sun.rain.fill")
+        case 9: return rain("Måttliga regnskurar", "cloud.sun.rain.fill")
+        case 10: return rain("Kraftiga regnskurar", "cloud.heavyrain.fill")
+        case 11: return thunder("Åskskurar", "cloud.bolt.rain.fill")
+        case 12: return sleet("Lätta byar av snöblandat regn", "cloud.sleet.fill")
+        case 13: return sleet("Måttliga byar av snöblandat regn", "cloud.sleet.fill")
+        case 14: return sleet("Kraftiga byar av snöblandat regn", "cloud.sleet.fill")
+        case 15: return snow("Lätta snöbyar", "cloud.snow.fill")
+        case 16: return snow("Måttliga snöbyar", "cloud.snow.fill")
+        case 17: return snow("Kraftiga snöbyar", "cloud.snow.fill")
+        case 18: return rain("Lätt regn", "cloud.drizzle.fill")
+        case 19: return rain("Måttligt regn", "cloud.rain.fill")
+        case 20: return rain("Kraftigt regn", "cloud.heavyrain.fill")
+        case 21: return thunder("Åska", "cloud.bolt.rain.fill")
+        case 22: return sleet("Lätt snöblandat regn", "cloud.sleet.fill")
+        case 23: return sleet("Måttligt snöblandat regn", "cloud.sleet.fill")
+        case 24: return sleet("Kraftigt snöblandat regn", "cloud.sleet.fill")
+        case 25: return snow("Lätt snöfall", "cloud.snow.fill")
+        case 26: return snow("Måttligt snöfall", "cloud.snow.fill")
+        case 27: return snow("Kraftigt snöfall", "cloud.snow.fill")
         default: return unknown
         }
     }
@@ -80,26 +82,26 @@ extension Condition {
     /// WMO-koder, som Open-Meteo använder utanför SMHI:s område.
     static func wmo(_ code: Int) -> Condition {
         switch code {
-        case 0: return dry("Klart", "☀️", clearSky: true)
-        case 1: return dry("Mestadels klart", "🌤️", clearSky: true)
-        case 2: return dry("Halvklart", "⛅")
-        case 3: return dry("Mulet", "☁️")
-        case 45, 48: return dry("Dimma", "🌫️")
-        case 51, 53: return rain("Duggregn", "🌦️")
-        case 55, 56, 57: return rain("Tätt duggregn", "🌧️")
-        case 61: return rain("Lätt regn", "🌦️")
-        case 63: return rain("Regn", "🌧️")
-        case 65, 66, 67: return rain("Kraftigt regn", "🌧️")
-        case 71, 77: return snow("Lätt snöfall", "🌨️")
-        case 73: return snow("Snöfall", "❄️")
-        case 75: return snow("Kraftigt snöfall", "❄️")
-        case 80: return rain("Lätta regnskurar", "🌦️")
-        case 81: return rain("Regnskurar", "🌧️")
-        case 82: return rain("Kraftiga regnskurar", "🌧️")
-        case 85: return snow("Lätta snöbyar", "🌨️")
-        case 86: return snow("Snöbyar", "❄️")
-        case 95: return thunder("Åska", "⛈️")
-        case 96, 99: return thunder("Åska med hagel", "⛈️")
+        case 0: return dry("Klart", "sun.max.fill", clearSky: true)
+        case 1: return dry("Mestadels klart", "sun.max.fill", clearSky: true)
+        case 2: return dry("Halvklart", "cloud.sun.fill")
+        case 3: return dry("Mulet", "cloud.fill")
+        case 45, 48: return dry("Dimma", "cloud.fog.fill")
+        case 51, 53: return rain("Duggregn", "cloud.drizzle.fill")
+        case 55, 56, 57: return rain("Tätt duggregn", "cloud.rain.fill")
+        case 61: return rain("Lätt regn", "cloud.drizzle.fill")
+        case 63: return rain("Regn", "cloud.rain.fill")
+        case 65, 66, 67: return rain("Kraftigt regn", "cloud.heavyrain.fill")
+        case 71, 77: return snow("Lätt snöfall", "cloud.snow.fill")
+        case 73: return snow("Snöfall", "cloud.snow.fill")
+        case 75: return snow("Kraftigt snöfall", "cloud.snow.fill")
+        case 80: return rain("Lätta regnskurar", "cloud.sun.rain.fill")
+        case 81: return rain("Regnskurar", "cloud.sun.rain.fill")
+        case 82: return rain("Kraftiga regnskurar", "cloud.heavyrain.fill")
+        case 85: return snow("Lätta snöbyar", "cloud.snow.fill")
+        case 86: return snow("Snöbyar", "cloud.snow.fill")
+        case 95: return thunder("Åska", "cloud.bolt.rain.fill")
+        case 96, 99: return thunder("Åska med hagel", "cloud.bolt.rain.fill")
         default: return unknown
         }
     }
@@ -116,6 +118,14 @@ struct HourForecast: Identifiable {
     let condition: Condition
 
     var id: String { label }
+}
+
+/** Måne i stället för sol när det är natt och himlen är klar. */
+func symbolName(for condition: Condition, isDay: Bool) -> String {
+    if !isDay && condition.clearSky {
+        return "moon.stars.fill"
+    }
+    return condition.symbol
 }
 
 struct Forecast {

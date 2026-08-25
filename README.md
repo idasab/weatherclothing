@@ -373,6 +373,12 @@ På en Mac, efter `npx cap add ios`:
   solskydd och hatt hör därför bara till appen.
 - **Uppdateras halvtimmesvis.** Tidslinjen ber om nästa uppdatering efter 30
   minuter, men iOS bestämmer själv hur ofta widgets faktiskt får köra.
+- **Fyra fel som attrappen avslöjade.** Widgeten kan inte renderas utanför
+  Xcode, så jag byggde en attrapp av layouten i dess faktiska mått. Den visade
+  att chipsen plockade `layers.suffix(2)`, alltså byxor och skor i stället för
+  ytterlagret; att den lilla storleken valde `layers.last`, alltså skorna; att
+  timraden visade regnrisk från en procent medan appen kräver tio; och att
+  "Tunn jacka eller kofta" är bredare än en liten widget. Alla fyra är rättade.
 - **Gul botten som ikonen.** Widgetens bakgrund är samma ljusa gula som
   appikonen, definierad i `Palette` överst i `KladvadretWidget.swift`. Ändrar du
   ikonens färg i [tools/generate-icons.py](tools/generate-icons.py) behöver de

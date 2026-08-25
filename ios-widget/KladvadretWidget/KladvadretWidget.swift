@@ -65,7 +65,18 @@ struct ForecastProvider: TimelineProvider {
 
 /// Det viktigaste att ta med: regnutrustningen om den behövs, annars ytterlagret.
 private func headlineGarment(_ advice: Advice) -> Garment {
-    advice.umbrella.gear ?? advice.layers.last ?? Garment(icon: "👕", label: advice.band)
+    if let gear = advice.umbrella.gear {
+        return gear
+    }
+
+    // Lagerlistan går underifrån och upp, så varken första eller sista posten är
+    // ytterlagret: den första är underställ eller tröja, den sista är skor.
+    let outer: Set<String> = ["coat.fill", "jacket.fill"]
+    if let jacket = advice.layers.first(where: { outer.contains($0.icon) }) {
+        return jacket
+    }
+
+    return advice.layers.first ?? Garment(icon: "tshirt.fill", label: advice.band)
 }
 
 private struct GarmentChip: View {
@@ -77,7 +88,13 @@ private struct GarmentChip: View {
             Image(systemName: garment.icon)
                 .font(.system(size: 10))
                 .foregroundStyle(Palette.ink)
-            Text(garment.label).font(.system(size: 11)).foregroundStyle(Palette.ink)
+            Text(garment.label)
+                .font(.system(size: 11))
+                .foregroundStyle(Palette.ink)
+                // "Tunn jacka eller kofta" är bredare än en liten widget, så
+                // etiketten krymper i stället för att brytas eller klippas.
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
         }
         .padding(.horizontal, 7)
         .padding(.vertical, 4)
@@ -105,7 +122,9 @@ private struct SmallView: View {
         if let forecast = entry.forecast, let advice = entry.advice {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top) {
-                    Text(forecast.condition.symbol).font(.system(size: 20))
+                    Image(systemName: symbolName(for: forecast.condition, isDay: forecast.isDay))
+                        .symbolRenderingMode(.multicolor)
+                        .font(.system(size: 20))
                     Spacer()
                     Text(forecast.placeName)
                         .font(.system(size: 10))
@@ -140,7 +159,9 @@ private struct MediumView: View {
         if let forecast = entry.forecast, let advice = entry.advice {
             HStack(alignment: .top, spacing: 14) {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(forecast.condition.symbol).font(.system(size: 18))
+                    Image(systemName: symbolName(for: forecast.condition, isDay: forecast.isDay))
+                        .symbolRenderingMode(.multicolor)
+                        .font(.system(size: 18))
                     Text("\(Int(forecast.temperature.rounded()))°")
                         .font(.system(size: 40, weight: .thin))
                         .foregroundStyle(Palette.ink)
@@ -183,11 +204,14 @@ private struct MediumView: View {
         }
     }
 
-    /// Regnutrustningen först, sedan de tyngsta lagren.
+    /// Regnutrustningen först, sedan de översta lagren.
+    ///
+    /// Lagerlistan börjar med överkroppen, så prefix ger tröja och jacka — det
+    /// man vill veta. suffix gav byxor och skor, alltså det minst informativa.
     private func chips(_ advice: Advice) -> [Garment] {
         var chips: [Garment] = []
         if let gear = advice.umbrella.gear { chips.append(gear) }
-        chips.append(contentsOf: advice.layers.suffix(2).reversed())
+        chips.append(contentsOf: advice.layers.prefix(2))
         return Array(chips.prefix(3))
     }
 }
@@ -202,9 +226,10 @@ private struct HourRow: View {
         let probability: Int
     }
 
-    /// Samma regel som i appen: en kolumn med bara nollor bär ingen information.
+    /// Samma tröskel som appen: 3 % läses som "ingen risk" precis som 0 %, så
+    /// kolumnen visas först när någon timme når tio procent.
     private var showsRisk: Bool {
-        hours.contains { $0.precipitationProbability > 0 }
+        hours.contains { $0.precipitationProbability >= 10 }
     }
 
     private var cells: [Cell] {
