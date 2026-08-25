@@ -20,7 +20,14 @@
 
       <div class="tools">
         <button type="button" (click)="locate()" [disabled]="loading()" aria-label="Använd min plats">
-          <span aria-hidden="true">📍</span>
+          <!-- Kartnål i appikonens färger: grafit med gul kärna. -->
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 2.4c-3.8 0-6.9 3.1-6.9 6.9 0 5 6.9 12.3 6.9 12.3s6.9-7.3 6.9-12.3c0-3.8-3.1-6.9-6.9-6.9z"
+              fill="var(--icon-ink)"
+            ></path>
+            <circle cx="12" cy="9.1" r="2.7" fill="var(--icon-yellow)"></circle>
+          </svg>
         </button>
         <button type="button" (click)="refresh()" [disabled]="loading()" aria-label="Uppdatera prognosen">
           <span aria-hidden="true" class="refresh" [class.spinning]="loading()">↻</span>

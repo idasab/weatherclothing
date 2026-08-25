@@ -243,6 +243,10 @@ den känsligaste: för ljusa flingor försvinner mot den off-white bottnen, för
 stora blir de grus i timstripen. Nuvarande värden är radie 2,7 och färgen
 `#a9c8e2`.
 
+Gränssnittsikoner som ska höra ihop med appikonen — som kartnålen i
+platsknappen — använder tokens `--icon-ink` och `--icon-yellow`, alltså ikonens
+grafit och gult. Plaggikonerna följer i stället textfärgen.
+
 Vilken symbol en vädersituation får bestäms i
 [weather-codes.ts](src/app/core/weather-codes.ts) för Open-Meteos WMO-koder och
 [smhi-symbols.ts](src/app/core/smhi-symbols.ts) för SMHI:s Wsymb2. Är himlen klar
