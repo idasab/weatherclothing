@@ -17,6 +17,18 @@ export interface AdviceInput {
   hours: HourForecast[];
 }
 
+/**
+ * Val hos den som frågar efter råd. Widgeten och appen visar inte samma saker,
+ * och en anteckning som är hjälpsam i widgeten kan vara en dubblett i appen.
+ */
+export interface AdviceOptions {
+  /**
+   * Sant när kvällen presenteras separat, som appens kväll-kort gör. Då utgår
+   * anteckningen om att det blir kallare senare: den säger samma sak, vagare.
+   */
+  eveningShownSeparately?: boolean;
+}
+
 export interface Garment {
   icon: GarmentIconName;
   label: string;
@@ -333,7 +345,8 @@ function extrasFor(
 function notesFor(
   input: AdviceInput,
   outlook: RainOutlook,
-  umbrella: UmbrellaVerdict
+  umbrella: UmbrellaVerdict,
+  options: AdviceOptions
 ): string[] {
   const notes: string[] = [];
   const feels = input.apparentTemperature;
@@ -348,7 +361,7 @@ function notesFor(
     (lowest, hour) => Math.min(lowest, hour.apparentTemperature),
     feels
   );
-  if (feels - coldestAhead >= 5) {
+  if (!options.eveningShownSeparately && feels - coldestAhead >= 5) {
     notes.push(
       `Det blir omkring ${Math.round(feels - coldestAhead)}° kallare senare — ta med ett extra lager.`
     );
@@ -385,7 +398,7 @@ function notesFor(
 }
 
 /** Översätter väderförhållanden till konkreta klädråd. */
-export function adviseFor(input: AdviceInput): Advice {
+export function adviseFor(input: AdviceInput, options: AdviceOptions = {}): Advice {
   const outlook = rainOutlook(input.hours);
   const band = bandFor(input.apparentTemperature);
   const umbrella = umbrellaVerdict(input, outlook);
@@ -396,6 +409,6 @@ export function adviseFor(input: AdviceInput): Advice {
     umbrella,
     layers: band.layers,
     extras: extrasFor(input, outlook, umbrella),
-    notes: notesFor(input, outlook, umbrella),
+    notes: notesFor(input, outlook, umbrella, options),
   };
 }

@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Testerna, 59 stycken:
+Appen svarar på http://localhost:4200. Testerna, 60 stycken:
 
 ```bash
 npm run test:ci
@@ -50,7 +50,7 @@ här är felrapporteringen i `main.ts`.
 
 ## Tester
 
-59 test i fem filer. Fördelningen är medveten:
+60 test i fem filer. Fördelningen är medveten:
 
 - **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
   klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
@@ -184,6 +184,11 @@ skiljer sig från morgondagens på tre punkter:
 
 Är klockan redan 18 eller senare visas inget kort: då täcker nulägets råd
 kvällen, och kortet hade blivit en dubblett.
+
+När kortet visas utgår anteckningen "det blir X° kallare senare" under "Värt att
+veta" — den säger samma sak, fast vagare. Det styrs av `eveningShownSeparately`
+i `AdviceOptions`, inte av att anteckningen tas bort ur logiken, eftersom
+widgeten inte har något kvällskort och behöver den kvar.
 
 Appen har också **dra-för-att-uppdatera**. Den är egenskriven, eftersom en app
 sparad på hemskärmen inte har webbläsarens egen. Dragrörelsen dämpas till hälften

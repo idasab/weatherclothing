@@ -164,6 +164,19 @@ describe('adviseFor', () => {
     expect(advice.notes.some((note) => note.includes('kallare'))).toBe(true);
   });
 
+  it('utelämnar anteckningen om kallare kväll när den visas separat', () => {
+    const hours = [hour({ apparentTemperature: 18 }), hour({ label: '22:00', apparentTemperature: 9 })];
+    const conditionsWithDrop = conditions({ apparentTemperature: 18, hours });
+
+    const utan = adviseFor(conditionsWithDrop);
+    const med = adviseFor(conditionsWithDrop, { eveningShownSeparately: true });
+
+    expect(utan.notes.some((note) => note.includes('kallare'))).toBe(true);
+    expect(med.notes.some((note) => note.includes('kallare'))).toBe(false);
+    // Övriga anteckningar ska inte påverkas.
+    expect(med.notes.length).toBe(utan.notes.length - 1);
+  });
+
   it('föreslår solskydd när UV-indexet är högt', () => {
     const advice = adviseFor(conditions({ apparentTemperature: 26, uvIndexMax: 8 }));
 

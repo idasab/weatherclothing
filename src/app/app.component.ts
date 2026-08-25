@@ -119,7 +119,13 @@ export class AppComponent implements OnInit {
 
   readonly advice = computed<Advice | null>(() => {
     const view = this.view();
-    return view ? adviseFor(view) : null;
+    if (!view) {
+      return null;
+    }
+
+    // Kvällskortet säger samma sak som anteckningen om att det blir kallare,
+    // fast konkret, så anteckningen utgår när kortet visas.
+    return adviseFor(view, { eveningShownSeparately: !!this.evening() });
   });
 
   /** Kvällen gäller bara i dag: morgondagens vy har sin egen dagsprognos. */
