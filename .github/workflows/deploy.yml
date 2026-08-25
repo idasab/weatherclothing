@@ -24,17 +24,29 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Node 20 nådde end-of-life i april 2026. 22 är aktiv LTS och ligger
+          # inom Angular 16:s krav (^16.14.0 || >=18.10.0).
+          node-version: 22
           cache: npm
 
       - name: Installera beroenden
-        run: npm ci
+        # --include=dev är uttryckligt: Angular CLI är en devDependency, och
+        # utan den finns ingen ng att bygga med.
+        run: npm ci --include=dev
 
-      # Appen ligger under https://<användare>.github.io/<repo>/, så bygget
-      # måste veta sin underkatalog. Namnet hämtas från repot, då fungerar
-      # workflowet oavsett vad du döper det till.
+      # Skriver ut vad som faktiskt finns i miljön. Kostar en sekund och gör
+      # nästa felsökning till en läsning i stället för en gissning.
+      - name: Visa verktygen
+        run: |
+          echo "node: $(node --version)"
+          echo "npm:  $(npm --version)"
+          echo "ng:   $(ls -l node_modules/.bin/ng 2>&1)"
+          echo "angular/cli: $(ls node_modules/@angular/cli/package.json 2>&1)"
+
+      # Anropar CLI:n direkt i stället för via npm-skriptet, så ett saknat
+      # verktyg ger ett tydligt fel i stället för exit 127 från skalet.
       - name: Bygg
-        run: npm run build -- --base-href "/${{ github.event.repository.name }}/"
+        run: npx --no-install ng build --base-href "/${{ github.event.repository.name }}/"
 
       - name: Ladda upp artefakten
         uses: actions/upload-pages-artifact@v3
