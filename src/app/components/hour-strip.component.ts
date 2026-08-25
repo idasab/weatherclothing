@@ -5,7 +5,7 @@ import { WeatherIconComponent } from './weather-icon.component';
 import { WeatherIconName } from '../core/weather-icon-name';
 import { HourForecast } from '../core/weather.models';
 
-/** Under den här procenten visas ingen siffra alls. */
+/** Når ingen timme den här procenten visas hela kolumnen inte. */
 const RISK_FLOOR = 10;
 
 @Component({
@@ -27,9 +27,9 @@ const RISK_FLOOR = 10;
             *ngIf="hasRainRisk"
             class="rain"
             [class.dry]="hour.precipitationProbability < 20"
-            [attr.aria-label]="riskLabel(hour) ? riskLabel(hour) + ' risk för nedbörd' : null"
+            [attr.aria-label]="hour.precipitationProbability + ' procent risk för nedbörd'"
           >
-            {{ riskLabel(hour) }}
+            {{ round(hour.precipitationProbability) }}%
           </span>
         </li>
       </ol>
@@ -110,18 +110,14 @@ export class HourStripComponent {
   @Input() showNow = true;
 
   /**
-   * Under tio procent visas ingen siffra. Ett värde som 3 % läses lätt som
-   * "ingen risk", och då är en tom ruta ärligare än en missvisande siffra.
-   * Når ingen timme upp till tröskeln försvinner hela kolumnen med etikett.
+   * Tröskeln gäller kolumnen som helhet, inte varje värde. Når ingen timme upp
+   * till tio procent bär serien ingen information — 3 % läses som "ingen risk"
+   * precis som 0 % — och då göms hela kolumnen med sin etikett. Räcker en enda
+   * timme över tröskeln visas alla värden, även de små, eftersom en tom ruta
+   * bland ifyllda i stället läses som saknad data.
    */
   get hasRainRisk(): boolean {
     return this.hours.some((hour) => hour.precipitationProbability >= RISK_FLOOR);
-  }
-
-  riskLabel(hour: HourForecast): string {
-    return hour.precipitationProbability >= RISK_FLOOR
-      ? `${Math.round(hour.precipitationProbability)}%`
-      : '';
   }
 
   icon(hour: HourForecast): WeatherIconName {

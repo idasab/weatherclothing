@@ -45,20 +45,22 @@ describe('HourStripComponent', () => {
     const element = render([hour(0, '15:00'), hour(35, '16:00'), hour(12, '17:00')]);
 
     const values = Array.from(element.querySelectorAll('.rain')).map((node) => node.textContent?.trim());
-    // Nollan lämnas tom: en liten siffra läses som ingen risk.
-    expect(values).toEqual(['', '35%', '12%']);
+    // Även nollan visas: en tom ruta bland ifyllda läses som saknad data.
+    expect(values).toEqual(['0%', '35%', '12%']);
     expect(element.querySelector('.legend')?.textContent?.trim()).toBe('Risk för regn');
   });
 
-  it('gömmer värden under tio procent, som annars läses som noll', () => {
+  it('behåller små värden när någon timme når tröskeln', () => {
     const element = render([hour(3, '15:00'), hour(9, '16:00'), hour(45, '17:00')]);
 
     const values = Array.from(element.querySelectorAll('.rain')).map((node) => node.textContent?.trim());
-    expect(values).toEqual(['', '', '45%']);
+    expect(values).toEqual(['3%', '9%', '45%']);
   });
 
   it('gömmer hela kolumnen när ingen timme når tröskeln', () => {
-    const element = render([hour(2, '15:00'), hour(8, '16:00'), hour(9, '17:00')]);
+    // Tre procent bär lika lite information som noll, och en kolumn med bara
+    // sådana värden är brus.
+    const element = render([hour(3, '15:00'), hour(8, '16:00'), hour(9, '17:00')]);
 
     expect(element.querySelectorAll('.rain').length).toBe(0);
     expect(element.querySelector('.legend')).toBeNull();

@@ -151,10 +151,11 @@ Klädlogiken behövde inte ändras: `adviseFor` tar en `AdviceInput`, och både
 nuläget och en kommande dag uppfyller den formen.
 
 Timprognosen visar dagtimmarna 07–19 för morgondagen och de närmaste tolv
-timmarna för i dag. Regnrisken skrivs bara ut från tio procent och uppåt: ett
-värde som 3 % läses lätt som "ingen risk", och då är en tom ruta ärligare än en
-missvisande siffra. Når ingen timme upp till tröskeln göms hela kolumnen med
-etikett. Saknas underlag för minst fyra timmar i morgon visas ingen
+timmarna för i dag. Regnrisken har en tröskel på tio procent, och den gäller
+kolumnen som helhet: når ingen timme upp dit göms hela kolumnen med sin etikett,
+eftersom 3 % läses som "ingen risk" precis som 0 %. Räcker en enda timme över
+tröskeln visas alla värden, även de små — en tom ruta bland ifyllda läses i
+stället som saknad data. Saknas underlag för minst fyra timmar i morgon visas ingen
 växlare alls.
 
 Appen har också **dra-för-att-uppdatera**. Den är egenskriven, eftersom en app
