@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { GarmentListComponent } from './components/garment-list.component';
 import { HourStripComponent } from './components/hour-strip.component';
 import { PlaceSearchComponent } from './components/place-search.component';
+import { WeatherIconComponent } from './components/weather-icon.component';
 import { Advice, adviseFor } from './core/clothing-advisor';
 import { ForecastService } from './core/forecast.service';
 import { GeocodingService } from './core/geocoding.service';
@@ -15,10 +16,10 @@ import {
   WeatherCondition,
   WeatherSnapshot,
 } from './core/weather.models';
-import { symbolFor } from './core/weather-codes';
+import { weatherIconFor } from './core/weather-codes';
 
 // Versionen i nyckeln gör att en cache från en äldre datamodell ignoreras.
-const CACHE_KEY = 'weather-clothing.snapshot.v3';
+const CACHE_KEY = 'weather-clothing.snapshot.v4';
 
 /** Hur långt man måste dra för att uppdateringen ska utlösas. */
 const PULL_THRESHOLD = 70;
@@ -45,7 +46,13 @@ interface DayView {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, GarmentListComponent, HourStripComponent, PlaceSearchComponent],
+  imports: [
+    CommonModule,
+    GarmentListComponent,
+    HourStripComponent,
+    PlaceSearchComponent,
+    WeatherIconComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
@@ -117,9 +124,9 @@ export class AppComponent implements OnInit {
 
   readonly conditionLabel = computed(() => this.view()?.condition.label ?? '');
 
-  readonly symbol = computed(() => {
+  readonly weatherIcon = computed(() => {
     const view = this.view();
-    return view ? symbolFor(view.condition, view.isDay) : '';
+    return view ? weatherIconFor(view.condition, view.isDay) : 'cloudy';
   });
 
   /** Styr bakgrundsgradienten så skärmen speglar vädret för den valda dagen. */

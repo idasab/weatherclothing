@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Testerna, 49 stycken:
+Appen svarar på http://localhost:4200. Testerna, 51 stycken:
 
 ```bash
 npm run test:ci
@@ -40,7 +40,7 @@ npm run build
 
 ## Tester
 
-49 test i fem filer. Fördelningen är medveten:
+51 test i fem filer. Fördelningen är medveten:
 
 - **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
   klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
@@ -151,7 +151,10 @@ Klädlogiken behövde inte ändras: `adviseFor` tar en `AdviceInput`, och både
 nuläget och en kommande dag uppfyller den formen.
 
 Timprognosen visar dagtimmarna 07–19 för morgondagen och de närmaste tolv
-timmarna för i dag. Saknas underlag för minst fyra timmar i morgon visas ingen
+timmarna för i dag. Regnrisken skrivs bara ut från tio procent och uppåt: ett
+värde som 3 % läses lätt som "ingen risk", och då är en tom ruta ärligare än en
+missvisande siffra. Når ingen timme upp till tröskeln göms hela kolumnen med
+etikett. Saknas underlag för minst fyra timmar i morgon visas ingen
 växlare alls.
 
 Appen har också **dra-för-att-uppdatera**. Den är egenskriven, eftersom en app
@@ -184,7 +187,25 @@ Tre saker att veta vid ändringar:
 
 Widgeten kan inte dela SVG med webbappen, så den använder Apples SF Symbols i
 stället: `tshirt.fill`, `jacket.fill`, `coat.fill`, `hat.cap.fill` och så vidare.
-Namnen står i `Advice.swift`. Vädersymbolerna är fortfarande emoji i båda.
+Namnen står i `Advice.swift`.
+
+### Vädersymbolerna
+
+Tio färgade symboler i
+[weather-icon.component.ts](src/app/components/weather-icon.component.ts): sol,
+måne, halvklart, mulet, dimma, regn, regnskurar, snöblandat, snö och åska. Till
+skillnad från plaggikonerna bär de egna färger i stället för `currentColor` —
+solen ska vara gul och dropparna blå även i en app som annars är dämpad.
+
+Banorna är genererade ur ett provblad och granskade i 58, 24 och 18 px. Snön är
+den känsligaste: för ljusa flingor försvinner mot den off-white bottnen, för
+stora blir de grus i timstripen. Nuvarande värden är radie 2,7 och färgen
+`#a9c8e2`.
+
+Vilken symbol en vädersituation får bestäms i
+[weather-codes.ts](src/app/core/weather-codes.ts) för Open-Meteos WMO-koder och
+[smhi-symbols.ts](src/app/core/smhi-symbols.ts) för SMHI:s Wsymb2. Är himlen klar
+och det är natt byts solen mot månen.
 
 ## Bygg som iOS-app
 

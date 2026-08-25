@@ -62,7 +62,7 @@
     <ng-container *ngIf="view() as view">
       <ng-container *ngIf="advice() as advice">
         <section class="card now">
-          <span class="symbol" aria-hidden="true">{{ symbol() }}</span>
+          <app-weather-icon class="symbol" [name]="weatherIcon()" [size]="46"></app-weather-icon>
           <p class="temperature">
             {{ round(view.temperature) }}<span class="degree">°</span>
           </p>

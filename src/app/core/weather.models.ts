@@ -1,3 +1,5 @@
+import { WeatherIconName } from './weather-icon-name';
+
 export interface Coordinates {
   latitude: number;
   longitude: number;
@@ -19,7 +21,7 @@ export type ForecastSource = 'SMHI' | 'Open-Meteo';
  */
 export interface WeatherCondition {
   label: string;
-  symbol: string;
+  icon: WeatherIconName;
   /** Klart eller nästan klart, styr om natten ska visa måne i stället för sol. */
   clearSky: boolean;
   isRain: boolean;

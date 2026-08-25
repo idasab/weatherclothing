@@ -41,16 +41,31 @@ describe('HourStripComponent', () => {
     expect(element.querySelectorAll('.temp').length).toBe(3);
   });
 
-  it('visar hela serien så snart en timme har risk', () => {
-    const element = render([hour(0, '15:00'), hour(3, '16:00'), hour(0, '17:00')]);
+  it('visar hela serien så snart en timme når tröskeln', () => {
+    const element = render([hour(0, '15:00'), hour(35, '16:00'), hour(12, '17:00')]);
 
     const values = Array.from(element.querySelectorAll('.rain')).map((node) => node.textContent?.trim());
-    expect(values).toEqual(['0%', '3%', '0%']);
+    // Nollan lämnas tom: en liten siffra läses som ingen risk.
+    expect(values).toEqual(['', '35%', '12%']);
     expect(element.querySelector('.legend')?.textContent?.trim()).toBe('Risk för regn');
   });
 
+  it('gömmer värden under tio procent, som annars läses som noll', () => {
+    const element = render([hour(3, '15:00'), hour(9, '16:00'), hour(45, '17:00')]);
+
+    const values = Array.from(element.querySelectorAll('.rain')).map((node) => node.textContent?.trim());
+    expect(values).toEqual(['', '', '45%']);
+  });
+
+  it('gömmer hela kolumnen när ingen timme når tröskeln', () => {
+    const element = render([hour(2, '15:00'), hour(8, '16:00'), hour(9, '17:00')]);
+
+    expect(element.querySelectorAll('.rain').length).toBe(0);
+    expect(element.querySelector('.legend')).toBeNull();
+  });
+
   it('dämpar låga värden men behåller dem läsbara', () => {
-    const element = render([hour(10, '15:00'), hour(60, '16:00')]);
+    const element = render([hour(12, '15:00'), hour(60, '16:00')]);
 
     const [low, high] = Array.from(element.querySelectorAll('.rain'));
     expect(low.classList.contains('dry')).toBe(true);
