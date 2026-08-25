@@ -5,7 +5,7 @@ import { GarmentListComponent } from './components/garment-list.component';
 import { HourStripComponent } from './components/hour-strip.component';
 import { PlaceSearchComponent } from './components/place-search.component';
 import { WeatherIconComponent } from './components/weather-icon.component';
-import { Advice, adviseFor } from './core/clothing-advisor';
+import { Advice, Garment, adviseFor } from './core/clothing-advisor';
 import { ForecastService } from './core/forecast.service';
 import { GeocodingService } from './core/geocoding.service';
 import { LocationError, LocationService } from './core/location.service';
@@ -120,6 +120,47 @@ export class AppComponent implements OnInit {
   readonly advice = computed<Advice | null>(() => {
     const view = this.view();
     return view ? adviseFor(view) : null;
+  });
+
+  /** Kvällen gäller bara i dag: morgondagens vy har sin egen dagsprognos. */
+  readonly evening = computed(() => (this.showingTomorrow() ? null : this.snapshot()?.evening ?? null));
+
+  private readonly eveningAdvice = computed<Advice | null>(() => {
+    const evening = this.evening();
+    return evening ? adviseFor(evening) : null;
+  });
+
+  /**
+   * Bara det som tillkommer jämfört med nu. Att upprepa hela klädlistan för
+   * kvällen skulle dölja det enda som är nytt, nämligen vad man behöver extra.
+   */
+  readonly eveningExtras = computed<Garment[]>(() => {
+    const now = this.advice();
+    const later = this.eveningAdvice();
+    if (!now || !later) {
+      return [];
+    }
+
+    const known = new Set([...now.layers, ...now.extras].map((garment) => garment.label));
+    return [...later.layers, ...later.extras].filter((garment) => !known.has(garment.label));
+  });
+
+  readonly eveningNote = computed(() => {
+    const evening = this.evening();
+    const later = this.eveningAdvice();
+    if (!evening || !later) {
+      return '';
+    }
+
+    const from = evening.hours[0]?.label ?? '';
+    const to = evening.hours[evening.hours.length - 1]?.label ?? '';
+    const weather =
+      `${from}–${to} känns det som ${Math.round(evening.apparentTemperature)}° ` +
+      `och det är ${evening.condition.label.toLowerCase()}.`;
+
+    return this.eveningExtras().length
+      ? `${weather} Det här behöver du utöver vad du har på dig nu.`
+      : `${weather} Samma kläder som nu räcker.`;
   });
 
   readonly conditionLabel = computed(() => this.view()?.condition.label ?? '');

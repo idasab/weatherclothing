@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Testerna, 51 stycken:
+Appen svarar på http://localhost:4200. Testerna, 59 stycken:
 
 ```bash
 npm run test:ci
@@ -38,9 +38,19 @@ Produktionsbygge hamnar i `dist/weather-clothing`:
 npm run build
 ```
 
+Linting med ESLint och @angular-eslint:
+
+```bash
+npm run lint
+```
+
+Utöver standardreglerna är tillgänglighetsreglerna för mallar påslagna, och
+`no-console` tillåter bara `error` och `warn` — den enda befogade användningen
+här är felrapporteringen i `main.ts`.
+
 ## Tester
 
-51 test i fem filer. Fördelningen är medveten:
+59 test i fem filer. Fördelningen är medveten:
 
 - **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
   klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
@@ -157,6 +167,23 @@ eftersom 3 % läses som "ingen risk" precis som 0 %. Räcker en enda timme över
 tröskeln visas alla värden, även de små — en tom ruta bland ifyllda läses i
 stället som saknad data. Saknas underlag för minst fyra timmar i morgon visas ingen
 växlare alls.
+
+### Kvällens råd
+
+Ett eget kort före timprognosen svarar på om kvällen kräver mer än nuläget. Det
+byggs av `eveningFrom` i [day-forecast.ts](src/app/core/day-forecast.ts) och
+skiljer sig från morgondagens på tre punkter:
+
+- **Den kallaste timmen får representera kvällen**, inte klockan åtta som för i
+  morgon. Frågan på kvällen är inte hur det är ute nu utan om man kommer att
+  frysa på vägen hem, och då är det värsta värdet det ärliga.
+- **UV-index sätts till noll**, så inga solskyddsråd följer med.
+- **Kortet visar bara skillnaden** mot vad man har på sig nu. Att upprepa hela
+  klädlistan hade dolt det enda som är nytt. Skiljer sig ingenting står det att
+  samma kläder räcker.
+
+Är klockan redan 18 eller senare visas inget kort: då täcker nulägets råd
+kvällen, och kortet hade blivit en dubblett.
 
 Appen har också **dra-för-att-uppdatera**. Den är egenskriven, eftersom en app
 sparad på hemskärmen inte har webbläsarens egen. Dragrörelsen dämpas till hälften

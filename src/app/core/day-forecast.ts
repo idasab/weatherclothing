@@ -7,6 +7,13 @@ const DAY_END = 19;
 /** Timmen man klär på sig och går ut, och som därför får representera dagen. */
 const DRESSING_HOUR = 8;
 
+/** Kvällen: från att eftermiddagen tar slut till att dygnet gör det. */
+const EVENING_START = 18;
+const EVENING_END = 23;
+
+/** Färre kvällstimmar än så är inte en kväll värd ett eget råd. */
+const MINIMUM_EVENING_HOURS = 2;
+
 /** Färre timmar än så är inte en dag, och då hoppar vi över rådet helt. */
 const MINIMUM_HOURS = 4;
 
@@ -86,6 +93,57 @@ export function tomorrowFrom(
     dayMax: Math.max(...temperatures),
     dayMin: Math.min(...temperatures),
     uvIndexMax,
+    hours: hours.map((entry) => entry.hour),
+  };
+}
+
+/**
+ * Kvällens prognos, för de timmar som återstår av kvällen i dag.
+ *
+ * Urvalet skiljer sig medvetet från morgondagens: här tas den kallaste timmen
+ * som representant, inte klockan åtta. Frågan på kvällen är inte "hur är det
+ * ute nu" utan "kommer jag att frysa på vägen hem", och då är det värsta värdet
+ * det ärliga. UV-index sätts till noll — solskyddsråd hör inte hit.
+ */
+export function eveningFrom(dated: DatedHour[], today: string): DayForecast | null {
+  // Är kvällen redan här täcker nulägets råd den, och kortet blir en dubblett.
+  if (dated.length && dated[0].hourOfDay >= EVENING_START) {
+    return null;
+  }
+
+  const hours = dated.filter(
+    (entry) =>
+      entry.date === today &&
+      entry.hourOfDay >= EVENING_START &&
+      entry.hourOfDay <= EVENING_END
+  );
+
+  if (hours.length < MINIMUM_EVENING_HOURS) {
+    return null;
+  }
+
+  const coldest = hours.reduce((worst, entry) =>
+    entry.hour.apparentTemperature < worst.hour.apparentTemperature ? entry : worst
+  );
+
+  const worstWeather = hours.reduce((worstSoFar, entry) =>
+    severity(entry.hour.condition) > severity(worstSoFar.hour.condition) ? entry : worstSoFar
+  );
+
+  const temperatures = hours.map((entry) => entry.hour.temperature);
+
+  return {
+    date: today,
+    temperature: coldest.hour.temperature,
+    apparentTemperature: coldest.hour.apparentTemperature,
+    windSpeed: Math.max(...hours.map((entry) => entry.hour.windSpeed)),
+    windGusts: Math.max(...hours.map((entry) => entry.hour.windGusts)),
+    precipitation: coldest.hour.precipitation,
+    condition: worstWeather.hour.condition,
+    isDay: coldest.hour.isDay,
+    dayMax: Math.max(...temperatures),
+    dayMin: Math.min(...temperatures),
+    uvIndexMax: 0,
     hours: hours.map((entry) => entry.hour),
   };
 }

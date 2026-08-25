@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { DatedHour, tomorrowFrom } from './day-forecast';
+import { DatedHour, eveningFrom, tomorrowFrom } from './day-forecast';
 import { HourForecast, Place, WeatherSnapshot } from './weather.models';
 import { conditionForWmoCode } from './weather-codes';
 
@@ -154,6 +154,7 @@ export class OpenMeteoService {
       dayMin: response.daily.temperature_2m_min[0],
       uvIndexMax: response.daily.uv_index_max[0] ?? 0,
       hours: this.upcomingHours(dated, response.current.time),
+      evening: eveningFrom(dated, currentDate),
       tomorrow: tomorrowFrom(dated, currentDate, response.daily.uv_index_max[1] ?? 0),
     };
   }

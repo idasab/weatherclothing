@@ -92,6 +92,8 @@ export interface WeatherSnapshot {
   uvIndexMax: number;
   /** De närmaste tolv timmarna, från och med nuvarande timme. */
   hours: HourForecast[];
+  /** Null när kvällen redan är här eller passerad. */
+  evening: DayForecast | null;
   /** Null när prognosen inte räcker till i morgon. */
   tomorrow: DayForecast | null;
 }

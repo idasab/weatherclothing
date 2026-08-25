@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 import { apparentTemperature } from './apparent-temperature';
-import { DatedHour, tomorrowFrom } from './day-forecast';
+import { DatedHour, eveningFrom, tomorrowFrom } from './day-forecast';
 import { NO_SUN_INFO, OpenMeteoService, SunInfo } from './open-meteo.service';
 import { conditionForSmhiSymbol } from './smhi-symbols';
 import { SmhiHour, SmhiService } from './smhi.service';
@@ -70,6 +70,7 @@ export class ForecastService {
       dayMin: Math.min(...temperatures),
       uvIndexMax: sun.uvIndexMax,
       hours: dated.slice(0, HOURS_AHEAD).map((entry) => entry.hour),
+      evening: eveningFrom(dated, today),
       tomorrow: tomorrowFrom(dated, today, sun.uvIndexMaxTomorrow),
     };
   }

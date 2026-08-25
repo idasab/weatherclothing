@@ -1,4 +1,4 @@
-import { DatedHour, tomorrowFrom } from './day-forecast';
+import { DatedHour, eveningFrom, tomorrowFrom } from './day-forecast';
 import { conditionForWmoCode } from './weather-codes';
 import { HourForecast } from './weather.models';
 
@@ -117,5 +117,74 @@ describe('tomorrowFrom', () => {
 
   it('bär UV-indexet vidare, så solskyddsråden gäller rätt dag', () => {
     expect(tomorrowFrom(fullDay('2026-08-26'), '2026-08-25', 7.5)?.uvIndexMax).toBe(7.5);
+  });
+});
+
+describe('eveningFrom', () => {
+  /** Ett dygn från klockan tolv, med kvällstimmar 18–23. */
+  function fromNoon(overrides: (hour: number) => Partial<HourForecast> = () => ({})) {
+    return Array.from({ length: 12 }, (_, index) =>
+      dated('2026-08-25', 12 + index, overrides(12 + index))
+    );
+  }
+
+  it('ger null när kvällen redan har börjat', () => {
+    const series = Array.from({ length: 5 }, (_, index) => dated('2026-08-25', 19 + index));
+
+    // Är klockan redan 19 täcker nulägets råd kvällen.
+    expect(eveningFrom(series, '2026-08-25')).toBeNull();
+  });
+
+  it('ger null när bara en kvällstimme återstår i serien', () => {
+    const series = [dated('2026-08-25', 12), dated('2026-08-25', 18)];
+
+    expect(eveningFrom(series, '2026-08-25')).toBeNull();
+  });
+
+  it('tar den kallaste timmen, inte den första', () => {
+    const series = fromNoon((hour) => ({
+      temperature: hour === 22 ? 4 : 15,
+      apparentTemperature: hour === 22 ? 2 : 15,
+    }));
+
+    const evening = eveningFrom(series, '2026-08-25');
+    expect(evening?.apparentTemperature).toBe(2);
+    expect(evening?.temperature).toBe(4);
+  });
+
+  it('utelämnar UV-index, eftersom solskyddsråd inte hör till kvällen', () => {
+    expect(eveningFrom(fromNoon(), '2026-08-25')?.uvIndexMax).toBe(0);
+  });
+
+  it('behåller bara kvällstimmarna', () => {
+    const evening = eveningFrom(fromNoon(), '2026-08-25');
+
+    expect(evening?.hours.map((hour) => hour.label)).toEqual([
+      '18:00',
+      '19:00',
+      '20:00',
+      '21:00',
+      '22:00',
+      '23:00',
+    ]);
+  });
+
+  it('visar kvällens värsta väder', () => {
+    const series = fromNoon((hour) => ({ condition: hour === 20 ? RAIN : CLEAR }));
+
+    expect(eveningFrom(series, '2026-08-25')?.condition.isRain).toBe(true);
+  });
+
+  it('tar vinden som kvällens högsta', () => {
+    const series = fromNoon((hour) => ({ windGusts: hour === 21 ? 17 : 3 }));
+
+    expect(eveningFrom(series, '2026-08-25')?.windGusts).toBe(17);
+  });
+
+  it('bryr sig inte om morgondagens kväll', () => {
+    const series = [...fromNoon(), dated('2026-08-26', 20), dated('2026-08-26', 21)];
+
+    const evening = eveningFrom(series, '2026-08-25');
+    expect(evening?.hours.every((hour) => hour.time.startsWith('2026-08-25'))).toBe(true);
   });
 });
