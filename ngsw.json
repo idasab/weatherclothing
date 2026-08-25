@@ -1,0 +1,91 @@
+{
+  "configVersion": 1,
+  "timestamp": 1787651230529,
+  "index": "/weatherclothing/index.html",
+  "assetGroups": [
+    {
+      "name": "appskal",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/weatherclothing/920.64422b7408d12650.js",
+        "/weatherclothing/favicon.ico",
+        "/weatherclothing/index.html",
+        "/weatherclothing/main.d23088250514aaff.js",
+        "/weatherclothing/manifest.webmanifest",
+        "/weatherclothing/polyfills.4ec04badc2169dff.js",
+        "/weatherclothing/runtime.c9c4e767748e9e95.js",
+        "/weatherclothing/styles.ea524b2fac63ad33.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "tillgangar",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/weatherclothing/assets/icons/icon-1024.png",
+        "/weatherclothing/assets/icons/icon-180.png",
+        "/weatherclothing/assets/icons/icon-192.png",
+        "/weatherclothing/assets/icons/icon-512.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "prognos",
+      "patterns": [
+        "https:\\/\\/opendata-download-metfcst\\.smhi\\.se\\/.*",
+        "https:\\/\\/api\\.open-meteo\\.com\\/.*"
+      ],
+      "strategy": "freshness",
+      "maxSize": 20,
+      "maxAge": 7200000,
+      "timeoutMs": 5000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/weatherclothing/920.64422b7408d12650.js": "4f09e7fd8525eadad51712ef0a111f326464c2bf",
+    "/weatherclothing/assets/icons/icon-1024.png": "55813a93c061ca7e47817205aea1db1729df6a33",
+    "/weatherclothing/assets/icons/icon-180.png": "b570495dc5aef47ade6f494278a2d4a3e917e4da",
+    "/weatherclothing/assets/icons/icon-192.png": "63d11f4bf3a359b458d69a11344061af9b2d9924",
+    "/weatherclothing/assets/icons/icon-512.png": "e8bdbeaed6ba69717c66468e45ff909f4cef0dbf",
+    "/weatherclothing/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
+    "/weatherclothing/index.html": "f5036754b4ae0dfd2802e3094093654babc08cec",
+    "/weatherclothing/main.d23088250514aaff.js": "b6bc04e670a8db034d719dcf1f6f4aa814020fda",
+    "/weatherclothing/manifest.webmanifest": "ce20d207a74925c991bbb1f11a70a739667d5598",
+    "/weatherclothing/polyfills.4ec04badc2169dff.js": "f7a3976c5e45147f0225fc117bbefe8ce3ab1ed9",
+    "/weatherclothing/runtime.c9c4e767748e9e95.js": "786916fd8a406284324373d80573eaf181974a66",
+    "/weatherclothing/styles.ea524b2fac63ad33.css": "0eb7669b0a6f34c6fc267c7c1d927663f59f7c4a"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
