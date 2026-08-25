@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1787659700005,
+  "timestamp": 1787667687338,
   "index": "/weatherclothing/index.html",
   "assetGroups": [
     {
@@ -14,11 +14,11 @@
         "/weatherclothing/920.64422b7408d12650.js",
         "/weatherclothing/favicon.ico",
         "/weatherclothing/index.html",
-        "/weatherclothing/main.5a616397dad5fd35.js",
+        "/weatherclothing/main.e34e576e43730e42.js",
         "/weatherclothing/manifest.webmanifest",
         "/weatherclothing/polyfills.4ec04badc2169dff.js",
         "/weatherclothing/runtime.c9c4e767748e9e95.js",
-        "/weatherclothing/styles.ea524b2fac63ad33.css"
+        "/weatherclothing/styles.c71b7bedb76a1261.css"
       ],
       "patterns": []
     },
@@ -62,12 +62,12 @@
     "/weatherclothing/assets/icons/icon-192.png": "63d11f4bf3a359b458d69a11344061af9b2d9924",
     "/weatherclothing/assets/icons/icon-512.png": "e8bdbeaed6ba69717c66468e45ff909f4cef0dbf",
     "/weatherclothing/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/weatherclothing/index.html": "b420f171ca18904383496ef6bbbc8fef0f4aa435",
-    "/weatherclothing/main.5a616397dad5fd35.js": "09533985b13147e4a22ac944bd7705933b09cdf4",
+    "/weatherclothing/index.html": "5bb09537c3dca3f51e6340ee0d52671536ca902b",
+    "/weatherclothing/main.e34e576e43730e42.js": "1daefd39ecaa379e094ca6a2759166fe31e9f658",
     "/weatherclothing/manifest.webmanifest": "ce20d207a74925c991bbb1f11a70a739667d5598",
     "/weatherclothing/polyfills.4ec04badc2169dff.js": "f7a3976c5e45147f0225fc117bbefe8ce3ab1ed9",
     "/weatherclothing/runtime.c9c4e767748e9e95.js": "786916fd8a406284324373d80573eaf181974a66",
-    "/weatherclothing/styles.ea524b2fac63ad33.css": "0eb7669b0a6f34c6fc267c7c1d927663f59f7c4a"
+    "/weatherclothing/styles.c71b7bedb76a1261.css": "59e963956f1039554e00292d162350870a28518c"
   },
   "navigationUrls": [
     {
