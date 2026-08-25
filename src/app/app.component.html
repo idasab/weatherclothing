@@ -26,6 +26,8 @@
 
     <p class="placeholder" *ngIf="loading() && !snapshot()">Hämtar väder…</p>
 
+    <p class="sr-only" role="status" aria-live="polite">{{ announcement() }}</p>
+
     <ng-container *ngIf="snapshot() as current">
       <ng-container *ngIf="advice() as advice">
         <section class="card now">

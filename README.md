@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Enhetstesterna för klädlogiken:
+Appen svarar på http://localhost:4200. Testerna, 38 stycken:
 
 ```bash
 npm run test:ci
@@ -37,6 +37,32 @@ Produktionsbygge hamnar i `dist/weather-clothing`:
 ```bash
 npm run build
 ```
+
+## Tester
+
+38 test i fyra filer. Fördelningen är medveten:
+
+- **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
+  klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
+  klädzonerna och att listan aldrig säger paraply när rådet är regnjacka.
+- **[apparent-temperature.spec.ts](src/app/core/apparent-temperature.spec.ts)**
+  täcker vindkyla och fuktig hetta, alltså formlerna som avgör vilken zon man
+  hamnar i.
+- **[smhi.service.spec.ts](src/app/core/smhi.service.spec.ts)** och
+  **[forecast.service.spec.ts](src/app/core/forecast.service.spec.ts)** kör mot
+  ett sparat, verkligt SMHI-svar i
+  [testing/smhi-response.fixture.ts](src/app/core/testing/smhi-response.fixture.ts).
+  Poängen är att en formatändring hos SMHI ska bli ett rött test i stället för en
+  tom skärm i mobilen — deras gamla API stängdes 31 mars 2026, så det är inte en
+  hypotetisk risk. Testerna täcker också att komplementanropet får falla bort,
+  att SMHI-fel leder vidare till Open-Meteo, och att SMHI inte anropas alls
+  utanför modellområdet.
+- **[hour-strip.component.spec.ts](src/app/components/hour-strip.component.spec.ts)**
+  täcker regeln att en timkolumn med bara nollor göms helt.
+
+Två saker testerna redan avslöjade: `forkJoin` avbryter komplementanropet i
+samma stund som SMHI fallerar, och att max/min grupperas på lokalt datum, inte
+UTC-datum.
 
 ## Väderkällor
 
@@ -273,9 +299,12 @@ app i App Store, men i praktiken samma upplevelse på telefonen.
 
 ## Värt att veta
 
-- **Ingen service worker.** Offline visas senast hämtade prognos ur
-  `localStorage`, men appskalet kräver nätverk vid start. Kör
-  `ng add @angular/pwa` om du vill ha riktig offlinestart.
+- **Offline fungerar.** En service worker cachar appskalet, så appen startar
+  utan nätverk. Konfigurationen ligger i [ngsw-config.json](ngsw-config.json):
+  appskalet hämtas i förväg, bilderna vid behov, och prognosanropen till SMHI och
+  Open-Meteo har strategin `freshness` med fem sekunders timeout och två timmars
+  hållbarhet — nätverket går först, cachen tar över när det är trögt eller borta.
+  Workern byggs bara i produktionsläge; `ng serve` bygger ingen.
 - **Tre externa tjänster, ingen med nyckel.** SMHI och Open-Meteo för prognosen,
   och BigDataCloud för att sätta ett ortsnamn på GPS-koordinaterna. Misslyckas
   namnuppslaget heter platsen bara "Din plats". Vilken prognoskälla som användes

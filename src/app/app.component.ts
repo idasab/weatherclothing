@@ -81,6 +81,28 @@ export class AppComponent implements OnInit {
     return 'clear-day';
   });
 
+  /**
+   * Kort sammanfattning för skärmläsare. En dold live-region som läser upp en
+   * mening är bättre än att läsa upp varje kapsel i listorna, och när
+   * paraplykortet togs bort försvann appens enda live-region med det.
+   */
+  readonly announcement = computed(() => {
+    const snapshot = this.snapshot();
+    const advice = this.advice();
+    if (!snapshot || !advice) {
+      return '';
+    }
+
+    const takeWith = advice.extras.length
+      ? ` Ta med ${advice.extras.map((extra) => extra.label).join(', ')}.`
+      : '';
+
+    return (
+      `${snapshot.place.name}, ${Math.round(snapshot.temperature)} grader, ` +
+      `känns som ${Math.round(snapshot.apparentTemperature)}. ${advice.summary}${takeWith}`
+    );
+  });
+
   readonly updatedLabel = computed(() => {
     const snapshot = this.snapshot();
     if (!snapshot) {

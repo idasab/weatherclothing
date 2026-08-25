@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "appskal",
+      "installMode": "prefetch",
+      "resources": {
+        "files": ["/favicon.ico", "/index.html", "/manifest.webmanifest", "/*.css", "/*.js"]
+      }
+    },
+    {
+      "name": "tillgangar",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": ["/assets/**", "/*.(png|ico|svg|woff2)"]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "prognos",
+      "urls": [
+        "https://opendata-download-metfcst.smhi.se/**",
+        "https://api.open-meteo.com/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 20,
+        "maxAge": "2h",
+        "timeout": "5s"
+      }
+    }
+  ]
+}
