@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Testerna, 38 stycken:
+Appen svarar på http://localhost:4200. Testerna, 49 stycken:
 
 ```bash
 npm run test:ci
@@ -40,7 +40,7 @@ npm run build
 
 ## Tester
 
-38 test i fyra filer. Fördelningen är medveten:
+49 test i fem filer. Fördelningen är medveten:
 
 - **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
   klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
@@ -129,6 +129,34 @@ redan är det. Allt räknas på de närmaste tolv timmarna.
 under 5°, halsduk under 0°, vindtätt ytterlager från 8 m/s, vattentäta skor vid
 nedbörd under 14°, och solglasögon, solskydd och hatt vid UV-index 3, 5
 respektive 7.
+
+## I dag och i morgon
+
+Appen svarar på två dagar. Växlaren högst upp byter hela vyn: temperatur,
+klädråd, paraplybesked och timprognos.
+
+Morgondagen byggs i [day-forecast.ts](src/app/core/day-forecast.ts) ur samma
+tidsserie som dagens råd, eftersom SMHI ändå levererar 3,5 dygn. Tre val är
+värda att känna till:
+
+- **Värdena tas från klockan åtta**, inte som dygnsmedel. Det är då man klär på
+  sig, och ett medelvärde mellan frostnatt och eftermiddagssol beskriver ingen
+  verklig stund.
+- **Vind och byar tas som dagens högsta.** Paraplyet fälls av den värsta byn, så
+  det är den som ska avgöra beskedet.
+- **Symbolen visar dagens värsta väder**, inte vädret vid åtta. Ett dygn med en
+  åskskur på eftermiddagen ska inte visa sol.
+
+Klädlogiken behövde inte ändras: `adviseFor` tar en `AdviceInput`, och både
+nuläget och en kommande dag uppfyller den formen.
+
+Timprognosen visar dagtimmarna 07–19 för morgondagen och de närmaste tolv
+timmarna för i dag. Saknas underlag för minst fyra timmar i morgon visas ingen
+växlare alls.
+
+Appen har också **dra-för-att-uppdatera**. Den är egenskriven, eftersom en app
+sparad på hemskärmen inte har webbläsarens egen. Dragrörelsen dämpas till hälften
+av fingerrörelsen och utlöses vid 70 pixlar.
 
 ## Plaggikonerna
 

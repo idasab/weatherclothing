@@ -11,6 +11,8 @@ function hour(precipitationProbability: number, label: string): HourForecast {
     apparentTemperature: 14,
     precipitationProbability,
     precipitation: 0,
+    windSpeed: 3,
+    windGusts: 5,
     condition: conditionForWmoCode(1),
     isDay: true,
   };

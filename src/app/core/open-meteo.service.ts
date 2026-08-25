@@ -1,10 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { DatedHour, tomorrowFrom } from './day-forecast';
 import { HourForecast, Place, WeatherSnapshot } from './weather.models';
 import { conditionForWmoCode } from './weather-codes';
 
-/** Hur många timmar framåt råden bygger på. */
+/** Hur många timmar framåt dagens råd bygger på. */
 const HOURS_AHEAD = 12;
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -27,6 +28,8 @@ interface ForecastResponse {
     apparent_temperature: number[];
     precipitation_probability: (number | null)[];
     precipitation: number[];
+    wind_speed_10m: number[];
+    wind_gusts_10m: number[];
     weather_code: number[];
     is_day: number[];
   };
@@ -53,10 +56,11 @@ interface SunResponse {
  */
 export interface SunInfo {
   uvIndexMax: number;
+  uvIndexMaxTomorrow: number;
   dayByHour: Record<string, boolean>;
 }
 
-export const NO_SUN_INFO: SunInfo = { uvIndexMax: 0, dayByHour: {} };
+export const NO_SUN_INFO: SunInfo = { uvIndexMax: 0, uvIndexMaxTomorrow: 0, dayByHour: {} };
 
 /** Global prognoskälla: används utanför SMHI:s område, och som reserv. */
 @Injectable({ providedIn: 'root' })
@@ -83,6 +87,8 @@ export class OpenMeteoService {
           'apparent_temperature',
           'precipitation_probability',
           'precipitation',
+          'wind_speed_10m',
+          'wind_gusts_10m',
           'weather_code',
           'is_day',
         ].join(','),
@@ -120,6 +126,7 @@ export class OpenMeteoService {
 
         return {
           uvIndexMax: response.daily.uv_index_max[0] ?? 0,
+          uvIndexMaxTomorrow: response.daily.uv_index_max[1] ?? 0,
           dayByHour,
         };
       })
@@ -127,6 +134,9 @@ export class OpenMeteoService {
   }
 
   private toSnapshot(response: ForecastResponse, place: Place): WeatherSnapshot {
+    const dated = this.allHours(response);
+    const currentDate = response.current.time.slice(0, 10);
+
     return {
       place,
       source: 'Open-Meteo',
@@ -143,41 +153,43 @@ export class OpenMeteoService {
       dayMax: response.daily.temperature_2m_max[0],
       dayMin: response.daily.temperature_2m_min[0],
       uvIndexMax: response.daily.uv_index_max[0] ?? 0,
-      hours: this.upcomingHours(response),
+      hours: this.upcomingHours(dated, response.current.time),
+      tomorrow: tomorrowFrom(dated, currentDate, response.daily.uv_index_max[1] ?? 0),
     };
   }
 
   /**
-   * Plockar de närmaste timmarna genom att jämföra textsträngarna. Att gå via
-   * Date hade tolkat tiderna i telefonens tidszon i stället för platsens.
+   * Open-Meteo levererar platsens lokaltid som text utan tidszon, så datum och
+   * timme kan läsas rakt ur strängen. Att gå via Date hade tolkat tiderna i
+   * telefonens tidszon i stället för platsens.
    */
-  private upcomingHours(response: ForecastResponse): HourForecast[] {
-    const currentHour = response.current.time.slice(0, 13);
+  private allHours(response: ForecastResponse): DatedHour[] {
     const hourly = response.hourly;
-    const hours: HourForecast[] = [];
 
-    for (let index = 0; index < hourly.time.length; index += 1) {
-      const time = hourly.time[index];
-      if (time.slice(0, 13) < currentHour) {
-        continue;
-      }
-
-      hours.push({
+    return hourly.time.map((time, index) => ({
+      date: time.slice(0, 10),
+      hourOfDay: Number(time.slice(11, 13)),
+      hour: {
         time,
         label: time.slice(11, 16),
         temperature: hourly.temperature_2m[index],
         apparentTemperature: hourly.apparent_temperature[index],
         precipitationProbability: hourly.precipitation_probability[index] ?? 0,
         precipitation: hourly.precipitation[index] ?? 0,
+        windSpeed: hourly.wind_speed_10m[index] ?? 0,
+        windGusts: hourly.wind_gusts_10m[index] ?? 0,
         condition: conditionForWmoCode(hourly.weather_code[index]),
         isDay: hourly.is_day[index] === 1,
-      });
+      },
+    }));
+  }
 
-      if (hours.length === HOURS_AHEAD) {
-        break;
-      }
-    }
+  private upcomingHours(dated: DatedHour[], currentTime: string): HourForecast[] {
+    const currentHour = currentTime.slice(0, 13);
 
-    return hours;
+    return dated
+      .filter((entry) => entry.hour.time.slice(0, 13) >= currentHour)
+      .slice(0, HOURS_AHEAD)
+      .map((entry) => entry.hour);
   }
 }

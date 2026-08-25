@@ -37,8 +37,34 @@ export interface HourForecast {
   precipitationProbability: number;
   /** Millimeter under timmen. */
   precipitation: number;
+  /** m/s */
+  windSpeed: number;
+  /** m/s. Behövs per timme för att kunna bedöma paraply för en hel dag framåt. */
+  windGusts: number;
   condition: WeatherCondition;
   isDay: boolean;
+}
+
+/**
+ * En hel dag framåt, för rådet om i morgon. Fälten är desamma som klädlogiken
+ * läser ur en ögonblicksbild, så samma adviseFor kan användas för båda.
+ */
+export interface DayForecast {
+  /** Lokalt datum, "2026-08-26". */
+  date: string;
+  /** Värdena vid tiden man går ut, inte dygnsmedel. */
+  temperature: number;
+  apparentTemperature: number;
+  windSpeed: number;
+  windGusts: number;
+  precipitation: number;
+  condition: WeatherCondition;
+  isDay: boolean;
+  dayMax: number;
+  dayMin: number;
+  uvIndexMax: number;
+  /** Dagtimmarna, ungefär 07–19. */
+  hours: HourForecast[];
 }
 
 export interface WeatherSnapshot {
@@ -64,4 +90,6 @@ export interface WeatherSnapshot {
   uvIndexMax: number;
   /** De närmaste tolv timmarna, från och med nuvarande timme. */
   hours: HourForecast[];
+  /** Null när prognosen inte räcker till i morgon. */
+  tomorrow: DayForecast | null;
 }

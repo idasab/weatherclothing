@@ -26,10 +26,12 @@ const OPEN_METEO_FORECAST = {
     apparent_temperature: [35, 36, 36],
     precipitation_probability: [50, 60, null],
     precipitation: [0.2, 0.4, 0],
+    wind_speed_10m: [4, 5, 5],
+    wind_gusts_10m: [8, 9, 9],
     weather_code: [61, 61, 3],
     is_day: [1, 1, 1],
   },
-  daily: { temperature_2m_max: [32], temperature_2m_min: [27], uv_index_max: [9] },
+  daily: { temperature_2m_max: [32, 33], temperature_2m_min: [27, 28], uv_index_max: [9, 10] },
 };
 
 const SUN_INFO = {
@@ -37,7 +39,7 @@ const SUN_INFO = {
     time: ['2026-08-25T10:00', '2026-08-25T11:00', '2026-08-25T12:00'],
     is_day: [1, 1, 0],
   },
-  daily: { uv_index_max: [4.2] },
+  daily: { uv_index_max: [4.2, 5.6] },
 };
 
 describe('ForecastService', () => {
@@ -98,6 +100,24 @@ describe('ForecastService', () => {
       // Komplementet säger natt vid 12 UTC, dag timmarna före.
       const night = snapshot?.hours.find((hour) => hour.time.startsWith('2026-08-25T12'));
       expect(night?.isDay).toBe(false);
+    });
+
+    it('bygger även morgondagens råd ur samma serie', () => {
+      const tomorrow = snapshot?.tomorrow;
+      expect(tomorrow).toBeTruthy();
+
+      const localDate = (utc: string) => new Date(utc).toLocaleDateString('sv-SE');
+      const today = localDate(SMHI_RESPONSE.timeSeries[0].time);
+      // Jasmines toBeGreaterThan vill ha tal, och datum jämförs som text här.
+      expect((tomorrow?.date ?? '') > today).toBe(true);
+
+      // Bara dagtimmar, och UV-indexet ska komma från morgondagens värde.
+      for (const hour of tomorrow?.hours ?? []) {
+        const localHour = new Date(hour.time).getHours();
+        expect(localHour).toBeGreaterThanOrEqual(7);
+        expect(localHour).toBeLessThanOrEqual(19);
+      }
+      expect(tomorrow?.uvIndexMax).toBe(SUN_INFO.daily.uv_index_max[1]);
     });
 
     it('räknar max och min på dygnets återstående timmar', () => {

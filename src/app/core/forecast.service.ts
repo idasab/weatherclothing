@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, forkJoin, map, of } from 'rxjs';
 import { apparentTemperature } from './apparent-temperature';
+import { DatedHour, tomorrowFrom } from './day-forecast';
 import { NO_SUN_INFO, OpenMeteoService, SunInfo } from './open-meteo.service';
 import { conditionForSmhiSymbol } from './smhi-symbols';
 import { SmhiHour, SmhiService } from './smhi.service';
 import { HourForecast, Place, WeatherSnapshot } from './weather.models';
 
-/** Hur många timmar framåt råden bygger på. */
+/** Hur många timmar framåt dagens råd bygger på. */
 const HOURS_AHEAD = 12;
 
 /**
@@ -43,8 +44,10 @@ export class ForecastService {
     }
 
     const current = series[0];
-    const restOfToday = this.restOfToday(series);
-    const temperatures = restOfToday.map((hour) => hour.temperature);
+    const dated = series.map((hour) => this.toDatedHour(hour, sun));
+    const today = dated[0].date;
+    const restOfToday = dated.filter((entry) => entry.date === today);
+    const temperatures = restOfToday.map((entry) => entry.hour.temperature);
 
     return {
       place,
@@ -66,43 +69,39 @@ export class ForecastService {
       dayMax: Math.max(...temperatures),
       dayMin: Math.min(...temperatures),
       uvIndexMax: sun.uvIndexMax,
-      hours: series.slice(0, HOURS_AHEAD).map((hour) => this.toHourForecast(hour, sun)),
+      hours: dated.slice(0, HOURS_AHEAD).map((entry) => entry.hour),
+      tomorrow: tomorrowFrom(dated, today, sun.uvIndexMaxTomorrow),
     };
   }
 
-  private toHourForecast(hour: SmhiHour, sun: SunInfo): HourForecast {
+  /**
+   * SMHI stämplar tiderna i UTC, så datum och timme räknas om till enhetens
+   * tidszon. För en svensk prognos läst i Sverige blir det svensk tid, vilket är
+   * hela poängen.
+   */
+  private toDatedHour(hour: SmhiHour, sun: SunInfo): DatedHour {
+    const local = new Date(hour.timeUtc);
+
+    return {
+      date: local.toLocaleDateString('sv-SE'),
+      hourOfDay: local.getHours(),
+      hour: this.toHourForecast(hour, sun, local),
+    };
+  }
+
+  private toHourForecast(hour: SmhiHour, sun: SunInfo, local: Date): HourForecast {
     return {
       time: hour.timeUtc,
-      label: this.label(hour.timeUtc),
+      label: local.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
       temperature: hour.temperature,
       apparentTemperature: apparentTemperature(hour.temperature, hour.windSpeed, hour.humidity),
       precipitationProbability: hour.precipitationProbability,
       precipitation: hour.precipitation,
+      windSpeed: hour.windSpeed,
+      windGusts: hour.windGusts,
       condition: conditionForSmhiSymbol(hour.symbolCode),
       isDay: this.isDay(hour, sun),
     };
-  }
-
-  /**
-   * SMHI stämplar tiderna i UTC, så de räknas om till enhetens tidszon. För en
-   * svensk prognos läst i Sverige blir det svensk tid, vilket är hela poängen.
-   */
-  private label(timeUtc: string): string {
-    return new Date(timeUtc).toLocaleTimeString('sv-SE', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
-
-  /**
-   * Prognosen börjar vid nuvarande timme, så högsta och lägsta värdet gäller
-   * dygnets återstående timmar — morgonens minimum finns inte i serien.
-   */
-  private restOfToday(series: SmhiHour[]): SmhiHour[] {
-    const today = new Date(series[0].timeUtc).toLocaleDateString('sv-SE');
-    return series.filter(
-      (hour) => new Date(hour.timeUtc).toLocaleDateString('sv-SE') === today
-    );
   }
 
   private isDay(hour: SmhiHour, sun: SunInfo): boolean {

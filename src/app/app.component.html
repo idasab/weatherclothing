@@ -1,4 +1,16 @@
-<div class="screen" [attr.data-theme]="theme()">
+<div
+  class="screen"
+  [attr.data-theme]="theme()"
+  (touchstart)="onTouchStart($event)"
+  (touchmove)="onTouchMove($event)"
+  (touchend)="onTouchEnd()"
+  (touchcancel)="onTouchEnd()"
+>
+  <!-- Dragindikatorn växer med fingret och snurrar när tröskeln är nådd. -->
+  <div class="pull" [style.height.px]="pull()" aria-hidden="true">
+    <span class="pull-mark" [class.ready]="pullReady()" [class.spinning]="loading()">↻</span>
+  </div>
+
   <div class="shell">
     <header class="top">
       <div class="titles">
@@ -28,38 +40,63 @@
 
     <p class="sr-only" role="status" aria-live="polite">{{ announcement() }}</p>
 
-    <ng-container *ngIf="snapshot() as current">
+    <div class="days" *ngIf="hasTomorrow()" role="group" aria-label="Välj dag">
+      <button
+        type="button"
+        [class.chosen]="!showingTomorrow()"
+        [attr.aria-pressed]="!showingTomorrow()"
+        (click)="day.set('today')"
+      >
+        I dag
+      </button>
+      <button
+        type="button"
+        [class.chosen]="showingTomorrow()"
+        [attr.aria-pressed]="showingTomorrow()"
+        (click)="day.set('tomorrow')"
+      >
+        I morgon
+      </button>
+    </div>
+
+    <ng-container *ngIf="view() as view">
       <ng-container *ngIf="advice() as advice">
         <section class="card now">
           <span class="symbol" aria-hidden="true">{{ symbol() }}</span>
           <p class="temperature">
-            {{ round(current.temperature) }}<span class="degree">°</span>
+            {{ round(view.temperature) }}<span class="degree">°</span>
           </p>
-          <p class="feels">Känns som {{ round(current.apparentTemperature) }}° · {{ conditionLabel() }}</p>
+          <p class="feels">Känns som {{ round(view.apparentTemperature) }}° · {{ conditionLabel() }}</p>
           <p class="band">{{ advice.band }}</p>
 
           <dl class="facts">
             <div>
               <dt>Max / min</dt>
-              <dd>{{ round(current.dayMax) }}° / {{ round(current.dayMin) }}°</dd>
+              <dd>{{ round(view.dayMax) }}° / {{ round(view.dayMin) }}°</dd>
             </div>
             <div>
               <dt>Vind</dt>
-              <dd>{{ round(current.windSpeed) }} m/s</dd>
+              <dd>{{ round(view.windSpeed) }} m/s</dd>
             </div>
             <div>
               <dt>Byar</dt>
-              <dd>{{ round(current.windGusts) }} m/s</dd>
+              <dd>{{ round(view.windGusts) }} m/s</dd>
             </div>
-            <div>
+            <div *ngIf="view.humidity !== null; else uvIndex">
               <dt>Fukt</dt>
-              <dd>{{ round(current.humidity) }} %</dd>
+              <dd>{{ round(view.humidity) }} %</dd>
             </div>
+            <ng-template #uvIndex>
+              <div>
+                <dt>UV</dt>
+                <dd>{{ round(view.uvIndexMax) }}</dd>
+              </div>
+            </ng-template>
           </dl>
         </section>
 
         <app-garment-list
-          heading="Ta på dig"
+          [heading]="view.isTomorrow ? 'Ta på dig i morgon' : 'Ta på dig'"
           [note]="advice.summary"
           [garments]="advice.layers"
         ></app-garment-list>
@@ -77,7 +114,11 @@
           </ul>
         </section>
 
-        <app-hour-strip [hours]="current.hours"></app-hour-strip>
+        <app-hour-strip
+          [hours]="view.hours"
+          [heading]="view.isTomorrow ? 'I morgon, timme för timme' : 'Närmaste timmarna'"
+          [showNow]="!view.isTomorrow"
+        ></app-hour-strip>
       </ng-container>
     </ng-container>
 

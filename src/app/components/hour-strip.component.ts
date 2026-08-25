@@ -10,12 +10,12 @@ import { HourForecast } from '../core/weather.models';
   template: `
     <section class="card">
       <header>
-        <h2 class="card-heading">Närmaste timmarna</h2>
+        <h2 class="card-heading">{{ heading }}</h2>
         <span class="legend" *ngIf="hasRainRisk">Risk för regn</span>
       </header>
       <ol>
         <li *ngFor="let hour of hours; let first = index">
-          <span class="time">{{ first === 0 ? 'Nu' : hour.label }}</span>
+          <span class="time">{{ showNow && first === 0 ? 'Nu' : hour.label }}</span>
           <span class="symbol" aria-hidden="true">{{ symbol(hour) }}</span>
           <span class="temp">{{ round(hour.temperature) }}°</span>
           <span
@@ -102,6 +102,9 @@ import { HourForecast } from '../core/weather.models';
 })
 export class HourStripComponent {
   @Input({ required: true }) hours!: HourForecast[];
+  @Input() heading = 'Närmaste timmarna';
+  /** Falskt för en kommande dag, där ingen timme är "nu". */
+  @Input() showNow = true;
 
   /**
    * Står det noll på varje timme bär kolumnen ingen information, och då är den

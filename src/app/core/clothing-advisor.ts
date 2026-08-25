@@ -1,7 +1,21 @@
 import { GarmentIconName } from './garment-icon-name';
-import { HourForecast, WeatherSnapshot } from './weather.models';
+import { HourForecast } from './weather.models';
 
 export type UmbrellaLevel = 'none' | 'maybe' | 'yes' | 'raincoat' | 'hood';
+
+/**
+ * Det klädlogiken faktiskt behöver veta. Både WeatherSnapshot och DayForecast
+ * uppfyller formen, så samma funktion ger råd för i dag och för i morgon.
+ */
+export interface AdviceInput {
+  temperature: number;
+  apparentTemperature: number;
+  windSpeed: number;
+  windGusts: number;
+  uvIndexMax: number;
+  isDay: boolean;
+  hours: HourForecast[];
+}
 
 export interface Garment {
   icon: GarmentIconName;
@@ -201,7 +215,7 @@ function bandFor(apparentTemperature: number): Band {
   return BANDS.find((candidate) => apparentTemperature < candidate.below) ?? BANDS[BANDS.length - 1];
 }
 
-function umbrellaVerdict(snapshot: WeatherSnapshot, outlook: RainOutlook): UmbrellaVerdict {
+function umbrellaVerdict(input: AdviceInput, outlook: RainOutlook): UmbrellaVerdict {
   const wet = outlook.maxProbability >= 30 || outlook.totalPrecipitation >= 0.3;
   const risk = Math.round(outlook.maxProbability);
   const fromWhen = outlook.peakIsNow
@@ -226,11 +240,11 @@ function umbrellaVerdict(snapshot: WeatherSnapshot, outlook: RainOutlook): Umbre
   }
 
   // Ett paraply som viks ut och in är sämre än inget paraply alls.
-  if (wet && snapshot.windGusts >= 12) {
+  if (wet && input.windGusts >= 12) {
     return {
       level: 'raincoat',
       reason:
-        `Vindbyar på ${Math.round(snapshot.windGusts)} m/s vänder ett paraply ut och in — ` +
+        `Vindbyar på ${Math.round(input.windGusts)} m/s vänder ett paraply ut och in — ` +
         `därför regnjacka i stället.${fromWhen}`,
     };
   }
@@ -272,11 +286,11 @@ function rainGearFor(level: UmbrellaLevel): Garment | null {
 }
 
 function extrasFor(
-  snapshot: WeatherSnapshot,
+  input: AdviceInput,
   outlook: RainOutlook,
   umbrella: UmbrellaVerdict
 ): Garment[] {
-  const feels = snapshot.apparentTemperature;
+  const feels = input.apparentTemperature;
   const extras: Garment[] = [];
 
   // Regnutrustningen först: det är den man glömmer i hallen.
@@ -294,19 +308,19 @@ function extrasFor(
   if (feels < 8) {
     extras.push({ icon: 'beanie', label: 'Mössa' });
   }
-  if (snapshot.windSpeed >= 8 && umbrella.level !== 'raincoat') {
+  if (input.windSpeed >= 8 && umbrella.level !== 'raincoat') {
     extras.push({ icon: 'jacket', label: 'Vindtätt ytterlager' });
   }
   if (outlook.totalPrecipitation >= 0.3 && feels < 14) {
     extras.push({ icon: 'boots', label: 'Vattentäta skor' });
   }
-  if (snapshot.isDay && snapshot.uvIndexMax >= 3) {
+  if (input.isDay && input.uvIndexMax >= 3) {
     extras.push({ icon: 'sunglasses', label: 'Solglasögon' });
   }
-  if (snapshot.uvIndexMax >= 5) {
+  if (input.uvIndexMax >= 5) {
     extras.push({ icon: 'sunscreen', label: 'Solskyddsfaktor' });
   }
-  if (snapshot.uvIndexMax >= 7) {
+  if (input.uvIndexMax >= 7) {
     extras.push({ icon: 'sun-hat', label: 'Keps eller hatt' });
   }
   if (feels >= 25) {
@@ -317,12 +331,12 @@ function extrasFor(
 }
 
 function notesFor(
-  snapshot: WeatherSnapshot,
+  input: AdviceInput,
   outlook: RainOutlook,
   umbrella: UmbrellaVerdict
 ): string[] {
   const notes: string[] = [];
-  const feels = snapshot.apparentTemperature;
+  const feels = input.apparentTemperature;
 
   // Varför regnutrustningen i "Ta med" ser ut som den gör. Torrt väder säger
   // ingenting alls, så listan förblir tyst när det inte finns något att göra.
@@ -330,7 +344,7 @@ function notesFor(
     notes.push(umbrella.reason);
   }
 
-  const coldestAhead = snapshot.hours.reduce(
+  const coldestAhead = input.hours.reduce(
     (lowest, hour) => Math.min(lowest, hour.apparentTemperature),
     feels
   );
@@ -340,23 +354,23 @@ function notesFor(
     );
   }
 
-  const gap = snapshot.temperature - feels;
+  const gap = input.temperature - feels;
   if (gap >= 4) {
     notes.push(
-      `Termometern visar ${Math.round(snapshot.temperature)}°, men vinden gör att det känns som ${Math.round(feels)}°.`
+      `Termometern visar ${Math.round(input.temperature)}°, men vinden gör att det känns som ${Math.round(feels)}°.`
     );
   } else if (gap <= -4) {
     notes.push(
-      `Fukten gör att det känns varmare än ${Math.round(snapshot.temperature)}° — klä dig som i ${Math.round(feels)}°.`
+      `Fukten gör att det känns varmare än ${Math.round(input.temperature)}° — klä dig som i ${Math.round(feels)}°.`
     );
   }
 
-  if (snapshot.windGusts >= 17) {
-    notes.push(`Vindbyar upp till ${Math.round(snapshot.windGusts)} m/s — håll i hatten.`);
+  if (input.windGusts >= 17) {
+    notes.push(`Vindbyar upp till ${Math.round(input.windGusts)} m/s — håll i hatten.`);
   }
 
-  if (snapshot.uvIndexMax >= 8) {
-    notes.push(`UV-index ${Math.round(snapshot.uvIndexMax)} i dag — solen bränner snabbt.`);
+  if (input.uvIndexMax >= 8) {
+    notes.push(`UV-index ${Math.round(input.uvIndexMax)} i dag — solen bränner snabbt.`);
   }
 
   if (feels <= -10) {
@@ -370,18 +384,18 @@ function notesFor(
   return notes;
 }
 
-/** Översätter en väderögonblicksbild till konkreta klädråd. */
-export function adviseFor(snapshot: WeatherSnapshot): Advice {
-  const outlook = rainOutlook(snapshot.hours);
-  const band = bandFor(snapshot.apparentTemperature);
-  const umbrella = umbrellaVerdict(snapshot, outlook);
+/** Översätter väderförhållanden till konkreta klädråd. */
+export function adviseFor(input: AdviceInput): Advice {
+  const outlook = rainOutlook(input.hours);
+  const band = bandFor(input.apparentTemperature);
+  const umbrella = umbrellaVerdict(input, outlook);
 
   return {
     band: band.band,
     summary: band.summary,
     umbrella,
     layers: band.layers,
-    extras: extrasFor(snapshot, outlook, umbrella),
-    notes: notesFor(snapshot, outlook, umbrella),
+    extras: extrasFor(input, outlook, umbrella),
+    notes: notesFor(input, outlook, umbrella),
   };
 }

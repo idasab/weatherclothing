@@ -1,7 +1,7 @@
-import { adviseFor } from './clothing-advisor';
+import { AdviceInput, adviseFor } from './clothing-advisor';
 import { conditionForSmhiSymbol } from './smhi-symbols';
 import { conditionForWmoCode } from './weather-codes';
-import { HourForecast, WeatherSnapshot } from './weather.models';
+import { HourForecast } from './weather.models';
 
 const CLEAR = conditionForWmoCode(1);
 const RAIN = conditionForWmoCode(63);
@@ -16,29 +16,22 @@ function hour(overrides: Partial<HourForecast> = {}): HourForecast {
     apparentTemperature: 11,
     precipitationProbability: 0,
     precipitation: 0,
+    windSpeed: 3,
+    windGusts: 5,
     condition: CLEAR,
     isDay: true,
     ...overrides,
   };
 }
 
-function snapshot(overrides: Partial<WeatherSnapshot> = {}): WeatherSnapshot {
+function conditions(overrides: Partial<AdviceInput> = {}): AdviceInput {
   return {
-    place: { name: 'Teststad', latitude: 59.33, longitude: 18.07 },
-    source: 'SMHI',
-    localTime: '2026-08-24T13:00:00Z',
-    fetchedAt: '2026-08-24T13:00:00.000Z',
     temperature: 12,
     apparentTemperature: 11,
-    humidity: 60,
     windSpeed: 3,
     windGusts: 5,
-    precipitation: 0,
-    condition: CLEAR,
-    isDay: true,
-    dayMax: 14,
-    dayMin: 8,
     uvIndexMax: 2,
+    isDay: true,
     hours: [hour(), hour({ label: '16:00' })],
     ...overrides,
   };
@@ -46,7 +39,7 @@ function snapshot(overrides: Partial<WeatherSnapshot> = {}): WeatherSnapshot {
 
 describe('adviseFor', () => {
   it('säger nej till paraply när prognosen är torr', () => {
-    const advice = adviseFor(snapshot());
+    const advice = adviseFor(conditions());
 
     expect(advice.umbrella.level).toBe('none');
     expect(advice.umbrella.reason).toBe('');
@@ -57,8 +50,7 @@ describe('adviseFor', () => {
 
   it('säger ja till paraply när nedbördsrisken är hög', () => {
     const advice = adviseFor(
-      snapshot({
-        condition: RAIN,
+      conditions({
         hours: [
           hour({ condition: RAIN, precipitationProbability: 80, precipitation: 1.2 }),
           hour({
@@ -79,7 +71,7 @@ describe('adviseFor', () => {
   });
 
   it('nöjer sig med ett kanske vid måttlig risk', () => {
-    const advice = adviseFor(snapshot({ hours: [hour({ precipitationProbability: 35 })] }));
+    const advice = adviseFor(conditions({ hours: [hour({ precipitationProbability: 35 })] }));
 
     expect(advice.umbrella.level).toBe('maybe');
     expect(advice.extras.map((extra) => extra.label)).toContain('Litet paraply');
@@ -87,10 +79,9 @@ describe('adviseFor', () => {
 
   it('rekommenderar regnjacka i stället för paraply när det blåser hårt', () => {
     const advice = adviseFor(
-      snapshot({
+      conditions({
         windSpeed: 11,
         windGusts: 16,
-        condition: RAIN,
         hours: [hour({ condition: RAIN, precipitationProbability: 90, precipitation: 2 })],
       })
     );
@@ -108,10 +99,9 @@ describe('adviseFor', () => {
 
   it('byter paraply mot luva när det snöar', () => {
     const advice = adviseFor(
-      snapshot({
+      conditions({
         temperature: -3,
         apparentTemperature: -7,
-        condition: SNOW,
         hours: [
           hour({
             condition: SNOW,
@@ -132,9 +122,8 @@ describe('adviseFor', () => {
 
   it('låter åska gå före både blåst och regnmängd', () => {
     const advice = adviseFor(
-      snapshot({
+      conditions({
         windGusts: 18,
-        condition: THUNDER,
         hours: [hour({ condition: THUNDER, precipitationProbability: 95, precipitation: 4 })],
       })
     );
@@ -148,7 +137,7 @@ describe('adviseFor', () => {
     // SMHI 26 är måttligt snöfall, 23 måttligt snöblandat regn, WMO 73 snöfall.
     for (const condition of [conditionForSmhiSymbol(26), conditionForSmhiSymbol(23), SNOW]) {
       const advice = adviseFor(
-        snapshot({
+        conditions({
           hours: [hour({ condition, precipitationProbability: 80, precipitation: 0.8 })],
         })
       );
@@ -158,7 +147,7 @@ describe('adviseFor', () => {
   });
 
   it('väljer klädzon utifrån känns-som-temperaturen, inte termometern', () => {
-    const advice = adviseFor(snapshot({ temperature: 8, apparentTemperature: 1 }));
+    const advice = adviseFor(conditions({ temperature: 8, apparentTemperature: 1 }));
 
     expect(advice.band).toBe('Kallt');
     expect(advice.notes.some((note) => note.includes('känns som'))).toBe(true);
@@ -166,7 +155,7 @@ describe('adviseFor', () => {
 
   it('varnar för att kvällen blir kallare', () => {
     const advice = adviseFor(
-      snapshot({
+      conditions({
         apparentTemperature: 18,
         hours: [hour({ apparentTemperature: 18 }), hour({ label: '22:00', apparentTemperature: 9 })],
       })
@@ -176,7 +165,7 @@ describe('adviseFor', () => {
   });
 
   it('föreslår solskydd när UV-indexet är högt', () => {
-    const advice = adviseFor(snapshot({ apparentTemperature: 26, uvIndexMax: 8 }));
+    const advice = adviseFor(conditions({ apparentTemperature: 26, uvIndexMax: 8 }));
 
     const labels = advice.extras.map((extra) => extra.label);
     expect(labels).toContain('Solglasögon');
@@ -186,7 +175,7 @@ describe('adviseFor', () => {
   });
 
   it('utelämnar solskyddsråd när källan saknar UV-index', () => {
-    const advice = adviseFor(snapshot({ apparentTemperature: 26, uvIndexMax: 0 }));
+    const advice = adviseFor(conditions({ apparentTemperature: 26, uvIndexMax: 0 }));
 
     expect(advice.extras.map((extra) => extra.label)).not.toContain('Solglasögon');
   });
