@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Testerna, 60 stycken:
+Appen svarar på http://localhost:4200. Testerna, 65 stycken:
 
 ```bash
 npm run test:ci
@@ -50,7 +50,7 @@ här är felrapporteringen i `main.ts`.
 
 ## Tester
 
-60 test i fem filer. Fördelningen är medveten:
+65 test i fem filer. Fördelningen är medveten:
 
 - **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
   klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
@@ -160,8 +160,12 @@ värda att känna till:
 Klädlogiken behövde inte ändras: `adviseFor` tar en `AdviceInput`, och både
 nuläget och en kommande dag uppfyller den formen.
 
-Timprognosen visar dagtimmarna 07–19 för morgondagen och de närmaste tolv
-timmarna för i dag. Regnrisken har en tröskel på tio procent, och den gäller
+Timprognosen visar dagtimmarna 07–19 för morgondagen och dygnets återstående
+timmar för i dag. Det är medvetet två olika serier i modellen: `hours` är alltid
+tolv timmar och utgör underlaget för råden, medan `hoursRestOfDay` är det
+timprognosen visar. Slås de ihop blir paraplybeskedet tunt sent på kvällen,
+eftersom fönstret då krymper till en timme eller två. Är dygnet nästan slut
+fylls visningsserien ut över midnatt, så kortet inte blir en ensam ruta. Regnrisken har en tröskel på tio procent, och den gäller
 kolumnen som helhet: når ingen timme upp dit göms hela kolumnen med sin etikett,
 eftersom 3 % läses som "ingen risk" precis som 0 %. Räcker en enda timme över
 tröskeln visas alla värden, även de små — en tom ruta bland ifyllda läses i
@@ -182,8 +186,12 @@ skiljer sig från morgondagens på tre punkter:
   klädlistan hade dolt det enda som är nytt. Skiljer sig ingenting står det att
   samma kläder räcker.
 
-Är klockan redan 18 eller senare visas inget kort: då täcker nulägets råd
-kvällen, och kortet hade blivit en dubblett.
+Kortet finns för båda dagarna: "I kväll" för i dag och "I morgon kväll" när
+morgondagen visas. För i dag utgår det när klockan redan passerat 18, eftersom
+nulägets råd då täcker kvällen och kortet hade blivit en dubblett — för en
+kommande dag ligger kvällen alltid framför oss, så där gäller ingen sådan spärr.
+Jämförelsen görs mot den dag som visas, och formuleringen följer med: "utöver vad
+du har på dig nu" i dag, "utöver dagens kläder" i morgon.
 
 När kortet visas utgår anteckningen "det blir X° kallare senare" under "Värt att
 veta" — den säger samma sak, fast vagare. Det styrs av `eveningShownSeparately`

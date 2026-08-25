@@ -19,7 +19,7 @@ import {
 import { weatherIconFor } from './core/weather-codes';
 
 // Versionen i nyckeln gör att en cache från en äldre datamodell ignoreras.
-const CACHE_KEY = 'weather-clothing.snapshot.v4';
+const CACHE_KEY = 'weather-clothing.snapshot.v5';
 
 /** Hur långt man måste dra för att uppdateringen ska utlösas. */
 const PULL_THRESHOLD = 70;
@@ -34,7 +34,10 @@ interface DayView {
   windGusts: number;
   uvIndexMax: number;
   isDay: boolean;
+  /** Underlaget för råden: alltid tolv timmar. */
   hours: HourForecast[];
+  /** Det timprognosen visar: resten av dygnet, eller morgondagens dagtimmar. */
+  stripHours: HourForecast[];
   condition: WeatherCondition;
   dayMax: number;
   dayMin: number;
@@ -93,6 +96,7 @@ export class AppComponent implements OnInit {
         uvIndexMax: tomorrow.uvIndexMax,
         isDay: tomorrow.isDay,
         hours: tomorrow.hours,
+        stripHours: tomorrow.hours,
         condition: tomorrow.condition,
         dayMax: tomorrow.dayMax,
         dayMin: tomorrow.dayMin,
@@ -109,6 +113,7 @@ export class AppComponent implements OnInit {
       uvIndexMax: snapshot.uvIndexMax,
       isDay: snapshot.isDay,
       hours: snapshot.hours,
+      stripHours: snapshot.hoursRestOfDay,
       condition: snapshot.condition,
       dayMax: snapshot.dayMax,
       dayMin: snapshot.dayMin,
@@ -128,8 +133,16 @@ export class AppComponent implements OnInit {
     return adviseFor(view, { eveningShownSeparately: !!this.evening() });
   });
 
-  /** Kvällen gäller bara i dag: morgondagens vy har sin egen dagsprognos. */
-  readonly evening = computed(() => (this.showingTomorrow() ? null : this.snapshot()?.evening ?? null));
+  /** Kvällen för den dag som visas. */
+  readonly evening = computed(() => {
+    const snapshot = this.snapshot();
+    if (!snapshot) {
+      return null;
+    }
+    return this.showingTomorrow() ? snapshot.tomorrowEvening : snapshot.evening;
+  });
+
+  readonly eveningHeading = computed(() => (this.showingTomorrow() ? 'I morgon kväll' : 'I kväll'));
 
   private readonly eveningAdvice = computed<Advice | null>(() => {
     const evening = this.evening();
@@ -164,9 +177,14 @@ export class AppComponent implements OnInit {
       `${from}–${to} känns det som ${Math.round(evening.apparentTemperature)}° ` +
       `och det är ${evening.condition.label.toLowerCase()}.`;
 
+    // Jämförelsen görs mot den dag som visas, så formuleringen måste följa med:
+    // "nu" är fel när man tittar på morgondagen.
+    const reference = this.showingTomorrow() ? 'dagens kläder' : 'vad du har på dig nu';
+    const enough = this.showingTomorrow() ? 'Samma kläder som under dagen räcker.' : 'Samma kläder som nu räcker.';
+
     return this.eveningExtras().length
-      ? `${weather} Det här behöver du utöver vad du har på dig nu.`
-      : `${weather} Samma kläder som nu räcker.`;
+      ? `${weather} Det här behöver du utöver ${reference}.`
+      : `${weather} ${enough}`;
   });
 
   readonly conditionLabel = computed(() => this.view()?.condition.label ?? '');

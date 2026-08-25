@@ -90,10 +90,18 @@ export interface WeatherSnapshot {
   dayMin: number;
   /** 0 när källan inte kan ge UV-index, då utgår solskyddsråden. */
   uvIndexMax: number;
-  /** De närmaste tolv timmarna, från och med nuvarande timme. */
+  /**
+   * De närmaste tolv timmarna. Underlaget för råden, och det fönstret ska vara
+   * lika långt oavsett vad klockan är — annars blir paraplybeskedet tunt sent
+   * på kvällen.
+   */
   hours: HourForecast[];
+  /** Resten av dygnet, för timprognosen. Visning, inte underlag för råd. */
+  hoursRestOfDay: HourForecast[];
   /** Null när kvällen redan är här eller passerad. */
   evening: DayForecast | null;
   /** Null när prognosen inte räcker till i morgon. */
   tomorrow: DayForecast | null;
+  /** Morgondagens kväll, samma sak men för nästa dygn. */
+  tomorrowEvening: DayForecast | null;
 }

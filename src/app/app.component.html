@@ -116,14 +116,14 @@
 
         <app-garment-list
           *ngIf="evening()"
-          heading="I kväll"
+          [heading]="eveningHeading()"
           [note]="eveningNote()"
           [garments]="eveningExtras()"
         ></app-garment-list>
 
         <app-hour-strip
-          [hours]="view.hours"
-          [heading]="view.isTomorrow ? 'I morgon, timme för timme' : 'Närmaste timmarna'"
+          [hours]="view.stripHours"
+          [heading]="view.isTomorrow ? 'I morgon, timme för timme' : 'Timmarna som återstår i dag'"
           [showNow]="!view.isTomorrow"
         ></app-hour-strip>
       </ng-container>

@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { DatedHour, eveningFrom, tomorrowFrom } from './day-forecast';
+import { DatedHour, eveningFrom, restOfDayFrom, tomorrowFrom } from './day-forecast';
 import { HourForecast, Place, WeatherSnapshot } from './weather.models';
 import { conditionForWmoCode } from './weather-codes';
 
@@ -136,6 +136,7 @@ export class OpenMeteoService {
   private toSnapshot(response: ForecastResponse, place: Place): WeatherSnapshot {
     const dated = this.allHours(response);
     const currentDate = response.current.time.slice(0, 10);
+    const tomorrow = tomorrowFrom(dated, currentDate, response.daily.uv_index_max[1] ?? 0);
 
     return {
       place,
@@ -154,8 +155,10 @@ export class OpenMeteoService {
       dayMin: response.daily.temperature_2m_min[0],
       uvIndexMax: response.daily.uv_index_max[0] ?? 0,
       hours: this.upcomingHours(dated, response.current.time),
+      hoursRestOfDay: restOfDayFrom(this.fromNow(dated, response.current.time), currentDate),
       evening: eveningFrom(dated, currentDate),
-      tomorrow: tomorrowFrom(dated, currentDate, response.daily.uv_index_max[1] ?? 0),
+      tomorrow: tomorrow,
+      tomorrowEvening: tomorrow ? eveningFrom(dated, tomorrow.date) : null,
     };
   }
 
@@ -186,11 +189,14 @@ export class OpenMeteoService {
   }
 
   private upcomingHours(dated: DatedHour[], currentTime: string): HourForecast[] {
-    const currentHour = currentTime.slice(0, 13);
-
-    return dated
-      .filter((entry) => entry.hour.time.slice(0, 13) >= currentHour)
+    return this.fromNow(dated, currentTime)
       .slice(0, HOURS_AHEAD)
       .map((entry) => entry.hour);
+  }
+
+  /** Timmarna från och med den nuvarande, i platsens egen tid. */
+  private fromNow(dated: DatedHour[], currentTime: string): DatedHour[] {
+    const currentHour = currentTime.slice(0, 13);
+    return dated.filter((entry) => entry.hour.time.slice(0, 13) >= currentHour);
   }
 }

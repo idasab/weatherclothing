@@ -14,6 +14,12 @@ const EVENING_END = 23;
 /** Färre kvällstimmar än så är inte en kväll värd ett eget råd. */
 const MINIMUM_EVENING_HOURS = 2;
 
+/**
+ * Så många timmar visar timprognosen minst, även när dygnet är nästan slut.
+ * Vid halv tolv på kvällen återstår annars en enda ruta.
+ */
+const MINIMUM_STRIP_HOURS = 3;
+
 /** Färre timmar än så är inte en dag, och då hoppar vi över rådet helt. */
 const MINIMUM_HOURS = 4;
 
@@ -98,22 +104,24 @@ export function tomorrowFrom(
 }
 
 /**
- * Kvällens prognos, för de timmar som återstår av kvällen i dag.
+ * Kvällens prognos för ett givet datum.
  *
  * Urvalet skiljer sig medvetet från morgondagens: här tas den kallaste timmen
  * som representant, inte klockan åtta. Frågan på kvällen är inte "hur är det
  * ute nu" utan "kommer jag att frysa på vägen hem", och då är det värsta värdet
  * det ärliga. UV-index sätts till noll — solskyddsråd hör inte hit.
  */
-export function eveningFrom(dated: DatedHour[], today: string): DayForecast | null {
-  // Är kvällen redan här täcker nulägets råd den, och kortet blir en dubblett.
-  if (dated.length && dated[0].hourOfDay >= EVENING_START) {
+export function eveningFrom(dated: DatedHour[], date: string): DayForecast | null {
+  // Bara för dagens kväll: har den redan börjat täcker nulägets råd den, och
+  // kortet blir en dubblett. En kommande dags kväll ligger alltid framför oss.
+  const isToday = dated.length > 0 && dated[0].date === date;
+  if (isToday && dated[0].hourOfDay >= EVENING_START) {
     return null;
   }
 
   const hours = dated.filter(
     (entry) =>
-      entry.date === today &&
+      entry.date === date &&
       entry.hourOfDay >= EVENING_START &&
       entry.hourOfDay <= EVENING_END
   );
@@ -133,7 +141,7 @@ export function eveningFrom(dated: DatedHour[], today: string): DayForecast | nu
   const temperatures = hours.map((entry) => entry.hour.temperature);
 
   return {
-    date: today,
+    date,
     temperature: coldest.hour.temperature,
     apparentTemperature: coldest.hour.apparentTemperature,
     windSpeed: Math.max(...hours.map((entry) => entry.hour.windSpeed)),
@@ -146,4 +154,16 @@ export function eveningFrom(dated: DatedHour[], today: string): DayForecast | nu
     uvIndexMax: 0,
     hours: hours.map((entry) => entry.hour),
   };
+}
+
+/**
+ * Timmarna som återstår av dygnet, för timprognosen. Är dygnet nästan slut
+ * fylls serien ut över midnatt, så kortet inte blir en ensam ruta.
+ */
+export function restOfDayFrom(dated: DatedHour[], today: string): HourForecast[] {
+  const today_ = dated.filter((entry) => entry.date === today);
+
+  return (today_.length >= MINIMUM_STRIP_HOURS ? today_ : dated.slice(0, MINIMUM_STRIP_HOURS)).map(
+    (entry) => entry.hour
+  );
 }

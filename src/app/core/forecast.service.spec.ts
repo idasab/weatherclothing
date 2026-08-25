@@ -77,8 +77,24 @@ describe('ForecastService', () => {
       expect(snapshot?.condition.label).toBeTruthy();
     });
 
-    it('tar tolv timmar framåt', () => {
+    it('tar tolv timmar framåt som underlag för råden', () => {
+      // Fönstret för råden ska vara lika långt oavsett vad klockan är.
       expect(snapshot?.hours.length).toBe(12);
+    });
+
+    it('visar dygnets återstående timmar i timprognosen', () => {
+      const localDate = (utc: string) => new Date(utc).toLocaleDateString('sv-SE');
+      const today = localDate(SMHI_RESPONSE.timeSeries[0].time);
+
+      const hours = snapshot?.hoursRestOfDay ?? [];
+      expect(hours.length).toBeGreaterThan(2);
+      expect(hours.every((hour) => localDate(hour.time) === today)).toBe(true);
+    });
+
+    it('bygger även morgondagens kväll', () => {
+      expect(snapshot?.tomorrowEvening).toBeTruthy();
+      expect(snapshot?.tomorrowEvening?.date).toBe(snapshot?.tomorrow?.date);
+      expect(snapshot?.tomorrowEvening?.uvIndexMax).toBe(0);
     });
 
     it('sätter klockslag på timmarna', () => {

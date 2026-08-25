@@ -1,4 +1,4 @@
-import { DatedHour, eveningFrom, tomorrowFrom } from './day-forecast';
+import { DatedHour, eveningFrom, restOfDayFrom, tomorrowFrom } from './day-forecast';
 import { conditionForWmoCode } from './weather-codes';
 import { HourForecast } from './weather.models';
 
@@ -181,10 +181,42 @@ describe('eveningFrom', () => {
     expect(eveningFrom(series, '2026-08-25')?.windGusts).toBe(17);
   });
 
+  it('bygger en kommande kväll även om dagens redan börjat', () => {
+    // Klockan är 21 i dag, men morgondagens kväll ligger fortfarande framför oss.
+    const series = [
+      ...Array.from({ length: 3 }, (_, index) => dated('2026-08-25', 21 + index)),
+      ...Array.from({ length: 6 }, (_, index) => dated('2026-08-26', 18 + index)),
+    ];
+
+    expect(eveningFrom(series, '2026-08-25')).toBeNull();
+    expect(eveningFrom(series, '2026-08-26')?.hours.length).toBe(6);
+  });
+
   it('bryr sig inte om morgondagens kväll', () => {
     const series = [...fromNoon(), dated('2026-08-26', 20), dated('2026-08-26', 21)];
 
     const evening = eveningFrom(series, '2026-08-25');
     expect(evening?.hours.every((hour) => hour.time.startsWith('2026-08-25'))).toBe(true);
+  });
+});
+
+describe('restOfDayFrom', () => {
+  it('tar dygnets återstående timmar', () => {
+    const series = [
+      ...Array.from({ length: 9 }, (_, index) => dated('2026-08-25', 15 + index)),
+      dated('2026-08-26', 0),
+      dated('2026-08-26', 1),
+    ];
+
+    const hours = restOfDayFrom(series, '2026-08-25');
+    expect(hours.length).toBe(9);
+    expect(hours.every((hour) => hour.time.startsWith('2026-08-25'))).toBe(true);
+  });
+
+  it('fyller ut över midnatt när dygnet nästan är slut', () => {
+    // En ensam ruta är inget kort, så serien får sträcka sig in på nästa dygn.
+    const series = [dated('2026-08-25', 23), dated('2026-08-26', 0), dated('2026-08-26', 1)];
+
+    expect(restOfDayFrom(series, '2026-08-25').length).toBe(3);
   });
 });
