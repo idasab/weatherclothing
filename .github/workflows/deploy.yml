@@ -1,9 +1,16 @@
+# Bygger appen i CI och publicerar till GitHub Pages.
+#
+# OBS: workflowet startas bara manuellt, från fliken Actions. Det gick inte att
+# få grönt på GitHub-runnern (installationssteget föll på Node 22, byggsteget på
+# Node 20 med exit 127), och tills orsaken är utredd publiceras appen i stället
+# från grenen gh-pages, som innehåller ett färdigbyggt resultat. Ett trasigt
+# workflow som körs vid varje push ger bara röda kryss utan nytta.
+#
+# För att felsöka: kör det härifrån och läs stegen "Visa miljön" och
+# "Kontrollera Angular CLI" — de skriver ut vad som faktiskt finns i miljön.
 name: Publicera till GitHub Pages
 
 on:
-  push:
-    branches: [main]
-  # Gör det möjligt att köra om publiceringen manuellt från fliken Actions.
   workflow_dispatch:
 
 permissions:
@@ -11,7 +18,6 @@ permissions:
   pages: write
   id-token: write
 
-# Låt en pågående publicering bli klar innan nästa startar.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -24,27 +30,28 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          # Node 20 nådde end-of-life i april 2026. 22 är aktiv LTS och ligger
-          # inom Angular 16:s krav (^16.14.0 || >=18.10.0).
-          node-version: 22
-          cache: npm
+          # Node 20 är den enda version där npm ci har lyckats här. Höj först
+          # när installationssteget är bevisat på en nyare version.
+          node-version: 20
+          # Ingen npm-cache: en återställd cache är en felkälla vi kan utesluta
+          # gratis, och installationen tar bara någon minut ändå.
 
-      - name: Installera beroenden
-        # --include=dev är uttryckligt: Angular CLI är en devDependency, och
-        # utan den finns ingen ng att bygga med.
-        run: npm ci --include=dev
-
-      # Skriver ut vad som faktiskt finns i miljön. Kostar en sekund och gör
-      # nästa felsökning till en läsning i stället för en gissning.
-      - name: Visa verktygen
+      # Diagnostiken ligger före installationen, så versionerna syns i loggen
+      # även när installationen är det som faller.
+      - name: Visa miljön
         run: |
           echo "node: $(node --version)"
           echo "npm:  $(npm --version)"
-          echo "ng:   $(ls -l node_modules/.bin/ng 2>&1)"
-          echo "angular/cli: $(ls node_modules/@angular/cli/package.json 2>&1)"
+          echo "os:   $(uname -a)"
 
-      # Anropar CLI:n direkt i stället för via npm-skriptet, så ett saknat
-      # verktyg ger ett tydligt fel i stället för exit 127 från skalet.
+      - name: Installera beroenden
+        run: npm ci --include=dev --no-audit --no-fund
+
+      - name: Kontrollera Angular CLI
+        run: |
+          ls -l node_modules/.bin/ng || echo "ng saknas i node_modules/.bin"
+          npx --no-install ng version || true
+
       - name: Bygg
         run: npx --no-install ng build --base-href "/${{ github.event.repository.name }}/"
 

@@ -146,26 +146,28 @@ båda lägena, så inget behöver ändras vid paketeringen.
 ## Publicera på GitHub Pages
 
 Appen är statisk, så den kan ligga på GitHub Pages och nås direkt från telefonen
-utan Mac, Xcode eller App Store. Publiceringen sköts av
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml), som bygger och
-lägger upp appen vid varje push till `main`.
+utan Mac, Xcode eller App Store.
 
-Så kommer du igång, allt utom bygget kräver ditt GitHub-konto:
+Publiceringen sker från grenen **`gh-pages`**, som innehåller ett färdigbyggt
+resultat. Bygg om och uppdatera den så här:
 
-1. Skapa ett tomt **publikt** repo på github.com. Gratiskonton kan bara
-   publicera Pages från publika repon.
-2. Peka det lokala repot dit och pusha:
+```bash
+python tools/build-pages.py
+```
 
-   ```bash
-   git remote add origin https://github.com/<användare>/<repo>.git
-   ```
+```bash
+git push origin gh-pages
+```
 
-   ```bash
-   git push -u origin main
-   ```
+Pages ska stå på **Settings → Pages → Source: Deploy from a branch**, med grenen
+`gh-pages` och mappen `/ (root)`. Appen hamnar på
+`https://<användare>.github.io/<repo>/`.
 
-3. Gå till repots **Settings → Pages** och välj **Source: GitHub Actions**.
-4. Efter någon minut ligger appen på `https://<användare>.github.io/<repo>/`.
+Varför inte bygga i CI? Workflowet i
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) gör precis det, men
+det har inte gått att få grönt på GitHubs runner — installationssteget föll på
+Node 22 och byggsteget på Node 20 med exit 127. Tills det är utrett startas det
+bara manuellt, och den färdigbyggda grenen är den väg som fungerar.
 
 Två detaljer som annars ställer till det:
 
