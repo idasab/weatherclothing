@@ -1,0 +1,53 @@
+name: Publicera till GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Gör det möjligt att köra om publiceringen manuellt från fliken Actions.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Låt en pågående publicering bli klar innan nästa startar.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Installera beroenden
+        run: npm ci
+
+      # Appen ligger under https://<användare>.github.io/<repo>/, så bygget
+      # måste veta sin underkatalog. Namnet hämtas från repot, då fungerar
+      # workflowet oavsett vad du döper det till.
+      - name: Bygg
+        run: npm run build -- --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Ladda upp artefakten
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/weather-clothing
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicera
+        id: deployment
+        uses: actions/deploy-pages@v4
