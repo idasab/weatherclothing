@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1787658427156,
+  "timestamp": 1787658978456,
   "index": "/weatherclothing/index.html",
   "assetGroups": [
     {
@@ -14,7 +14,7 @@
         "/weatherclothing/920.64422b7408d12650.js",
         "/weatherclothing/favicon.ico",
         "/weatherclothing/index.html",
-        "/weatherclothing/main.e1321a1900659ee1.js",
+        "/weatherclothing/main.2d73925a77554cc4.js",
         "/weatherclothing/manifest.webmanifest",
         "/weatherclothing/polyfills.4ec04badc2169dff.js",
         "/weatherclothing/runtime.c9c4e767748e9e95.js",
@@ -62,8 +62,8 @@
     "/weatherclothing/assets/icons/icon-192.png": "63d11f4bf3a359b458d69a11344061af9b2d9924",
     "/weatherclothing/assets/icons/icon-512.png": "e8bdbeaed6ba69717c66468e45ff909f4cef0dbf",
     "/weatherclothing/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/weatherclothing/index.html": "1c2bbdf0a1a849aada379e0dbd96041a0bd63234",
-    "/weatherclothing/main.e1321a1900659ee1.js": "babe5004355ece99afb8f384002ce0db53d36324",
+    "/weatherclothing/index.html": "31b6b0060b32f289d85bcc4ff83e4bd514031883",
+    "/weatherclothing/main.2d73925a77554cc4.js": "06e61e017d002eb0819802ca59ee7e377447273b",
     "/weatherclothing/manifest.webmanifest": "ce20d207a74925c991bbb1f11a70a739667d5598",
     "/weatherclothing/polyfills.4ec04badc2169dff.js": "f7a3976c5e45147f0225fc117bbefe8ce3ab1ed9",
     "/weatherclothing/runtime.c9c4e767748e9e95.js": "786916fd8a406284324373d80573eaf181974a66",
