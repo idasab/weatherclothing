@@ -139,9 +139,16 @@ def write_png(path, size, pixels):
     # Färgtyp 2 = RGB utan alfa. iOS kräver ogenomskinliga ikoner, och
     # genomskinlighet skulle bli svart på hemskärmen.
     header = struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)
+    # sRGB och gAMA taggar färgrymden. Utan dem är bilden otaggad och varje
+    # visare får gissa, vilket kan ge en annan ton på skärmar med bredare
+    # färgrymd än sRGB.
+    srgb = chunk(b"sRGB", bytes([0]))  # 0 = perceptuell återgivning
+    gama = chunk(b"gAMA", struct.pack(">I", 45455))  # 1/2,2
     path.write_bytes(
         b"\x89PNG\r\n\x1a\n"
         + chunk(b"IHDR", header)
+        + srgb
+        + gama
         + chunk(b"IDAT", zlib.compress(pixels, 9))
         + chunk(b"IEND", b"")
     )
