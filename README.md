@@ -1,7 +1,7 @@
 # Kläder i väder
 
 Webbapp som hämtar lokalt väder och svarar på två frågor: vad du ska ha på dig,
-och om du behöver ta med paraply. Byggd för att kunna paketeras som iOS-app med
+och vad är bra att ha med sig. Byggd för att kunna paketeras som iOS-app med
 Capacitor, men fungerar lika bra som webbapp eller sparad på hemskärmen.
 
 ## Versioner och varför
