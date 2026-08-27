@@ -313,7 +313,7 @@ struct KladvadretWidget: Widget {
             KladvadretWidgetEntryView(entry: entry)
                 .containerBackground(Palette.background, for: .widget)
         }
-        .configurationDisplayName("Klädvädret")
+        .configurationDisplayName("Kläder i väder")
         .description("Vad du behöver ha på dig, och om du behöver paraply.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
     }

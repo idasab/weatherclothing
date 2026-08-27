@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   // Byt till ditt eget bundle-id innan du signerar i Xcode.
   appId: 'com.example.kladvadret',
-  appName: 'Klädvädret',
+  appName: 'Kläder i väder',
   // Måste peka på Angulars byggmapp, se outputPath i angular.json.
   webDir: 'dist/weather-clothing',
   ios: {

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Klädvädret</string>
+	<string>Kläder i väder</string>
 	<!-- Utan den här nyckeln får widgeten aldrig någon position. -->
 	<key>NSWidgetWantsLocation</key>
 	<true/>

@@ -1,4 +1,4 @@
-# Klädvädret
+# Kläder i väder
 
 Webbapp som hämtar lokalt väder och svarar på två frågor: vad du ska ha på dig,
 och om du behöver ta med paraply. Byggd för att kunna paketeras som iOS-app med
