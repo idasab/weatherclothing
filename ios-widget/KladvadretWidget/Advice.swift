@@ -69,54 +69,55 @@ private struct Band {
     let layers: [Garment]
 }
 
-/// Zonerna utgår från känns-som-temperaturen, precis som i webbappen.
+/// Zonerna utgår från känns-som-temperaturen, precis som i webbappen, och är
+/// justerade två grader nedåt av samma skäl: råden upplevdes för varma.
 private let bands: [Band] = [
-    Band(below: -12, name: "Extremkyla", summary: "Täck all bar hud och håll utetiden kort.", layers: [
+    Band(below: -14, name: "Extremkyla", summary: "Täck all bar hud och håll utetiden kort.", layers: [
         Garment(icon: "tshirt.fill", label: "Termounderställ"),
         Garment(icon: "tshirt.fill", label: "Ulltröja eller fleece"),
         Garment(icon: "coat.fill", label: "Vinterjacka"),
         Garment(icon: "figure.stand", label: "Termobyxor"),
     ]),
-    Band(below: -5, name: "Sträng kyla", summary: "Ordentlig vinterklädsel, flera lager.", layers: [
+    Band(below: -7, name: "Sträng kyla", summary: "Ordentlig vinterklädsel, flera lager.", layers: [
         Garment(icon: "tshirt.fill", label: "Termounderställ"),
         Garment(icon: "tshirt.fill", label: "Ulltröja eller fleece"),
         Garment(icon: "coat.fill", label: "Vinterjacka"),
         Garment(icon: "shoe.2.fill", label: "Vinterkängor"),
     ]),
-    Band(below: 0, name: "Minusgrader", summary: "Vinterjacka och täck händer och huvud.", layers: [
+    Band(below: -2, name: "Minusgrader", summary: "Vinterjacka och täck händer och huvud.", layers: [
         Garment(icon: "tshirt.fill", label: "Stickad tröja"),
         Garment(icon: "coat.fill", label: "Vinterjacka"),
         Garment(icon: "figure.stand", label: "Långbyxor"),
         Garment(icon: "shoe.2.fill", label: "Varma skor"),
     ]),
-    Band(below: 5, name: "Kallt", summary: "Vadderad jacka och ett lager under.", layers: [
+    Band(below: 3, name: "Kallt", summary: "Vadderad jacka och ett lager under.", layers: [
         Garment(icon: "tshirt.fill", label: "Långärmad tröja"),
         Garment(icon: "tshirt.fill", label: "Tröja eller hoodie"),
         Garment(icon: "coat.fill", label: "Vadderad jacka"),
         Garment(icon: "shoe.fill", label: "Täckta skor"),
     ]),
-    Band(below: 10, name: "Kyligt", summary: "Jacka på, gärna med en tröja under.", layers: [
+    Band(below: 8, name: "Kyligt", summary: "Jacka på, gärna med en tröja under.", layers: [
         Garment(icon: "tshirt.fill", label: "Långärmad tröja"),
         Garment(icon: "tshirt.fill", label: "Tröja eller kofta"),
         Garment(icon: "jacket.fill", label: "Jacka"),
         Garment(icon: "figure.stand", label: "Långbyxor"),
     ]),
-    Band(below: 15, name: "Svalt", summary: "Tunn jacka räcker en bit.", layers: [
+    Band(below: 13, name: "Svalt", summary: "Tunn jacka räcker en bit.", layers: [
         Garment(icon: "tshirt.fill", label: "Långärmad tröja"),
         Garment(icon: "jacket.fill", label: "Tunn jacka eller kofta"),
         Garment(icon: "figure.stand", label: "Långbyxor"),
     ]),
-    Band(below: 19, name: "Milt", summary: "Skjortväder med något tunt över.", layers: [
+    Band(below: 17, name: "Milt", summary: "Skjortväder med något tunt över.", layers: [
         Garment(icon: "tshirt.fill", label: "T-shirt eller skjorta"),
         Garment(icon: "jacket.fill", label: "Tunn kofta över axeln"),
         Garment(icon: "figure.stand", label: "Långbyxor"),
     ]),
-    Band(below: 24, name: "Varmt", summary: "Kortärmat hela dagen.", layers: [
+    Band(below: 22, name: "Varmt", summary: "Kortärmat hela dagen.", layers: [
         Garment(icon: "tshirt.fill", label: "T-shirt"),
         Garment(icon: "figure.stand", label: "Tunna byxor eller shorts"),
         Garment(icon: "shoe.fill", label: "Lätta skor"),
     ]),
-    Band(below: 29, name: "Riktigt varmt", summary: "Lätt och luftigt, håll dig i skuggan.", layers: [
+    Band(below: 27, name: "Riktigt varmt", summary: "Lätt och luftigt, håll dig i skuggan.", layers: [
         Garment(icon: "tshirt.fill", label: "Tunn t-shirt eller linne"),
         Garment(icon: "figure.stand", label: "Shorts eller klänning"),
         Garment(icon: "shoe.fill", label: "Sandaler"),
@@ -208,16 +209,16 @@ private func extras(_ forecast: Forecast, _ outlook: RainOutlook, _ umbrella: Um
     let feels = forecast.apparentTemperature
 
     if let gear = umbrella.gear { extras.append(gear) }
-    if feels < 0 { extras.append(Garment(icon: "scarf", label: "Halsduk")) }
-    if feels < 5 { extras.append(Garment(icon: "hand.raised.fill", label: feels < -8 ? "Tumvantar" : "Vantar")) }
-    if feels < 8 { extras.append(Garment(icon: "hat.cap.fill", label: "Mössa")) }
+    if feels < -2 { extras.append(Garment(icon: "scarf", label: "Halsduk")) }
+    if feels < 3 { extras.append(Garment(icon: "hand.raised.fill", label: feels < -10 ? "Tumvantar" : "Vantar")) }
+    if feels < 6 { extras.append(Garment(icon: "hat.cap.fill", label: "Mössa")) }
     if forecast.windSpeed >= 8, umbrella.level != .raincoat {
         extras.append(Garment(icon: "wind", label: "Vindtätt ytterlager"))
     }
-    if outlook.totalPrecipitation >= 0.3, feels < 14 {
+    if outlook.totalPrecipitation >= 0.3, feels < 12 {
         extras.append(Garment(icon: "shoe.2.fill", label: "Vattentäta skor"))
     }
-    if feels >= 25 { extras.append(Garment(icon: "drop.fill", label: "Vattenflaska")) }
+    if feels >= 23 { extras.append(Garment(icon: "drop.fill", label: "Vattenflaska")) }
 
     return extras
 }

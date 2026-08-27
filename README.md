@@ -26,7 +26,7 @@ npm install
 npm start
 ```
 
-Appen svarar på http://localhost:4200. Testerna, 65 stycken:
+Appen svarar på http://localhost:4200. Testerna, 67 stycken:
 
 ```bash
 npm run test:ci
@@ -50,7 +50,7 @@ här är felrapporteringen i `main.ts`.
 
 ## Tester
 
-65 test i fem filer. Fördelningen är medveten:
+67 test i fem filer. Fördelningen är medveten:
 
 - **[clothing-advisor.spec.ts](src/app/core/clothing-advisor.spec.ts)** täcker
   klädlogiken, som är appens egentliga innehåll: paraplybeskedets ordning,
@@ -117,8 +117,14 @@ justera.
 
 **Kläderna** väljs utifrån känns-som-temperaturen, inte termometern, eftersom
 vind och fukt är det som avgör hur du faktiskt upplever vädret. Tio zoner från
-"Extremkyla" under -12° till "Hetta" över 29°, var och en med en lagerlista
+"Extremkyla" under -14° till "Hetta" över 27°, var och en med en lagerlista
 underifrån och upp.
+
+Skalan justerades ner två grader efter att råden upplevts för varma. Vid samma
+temperatur hamnar man nu ett snäpp lättare klädd: 14° ger "Milt" i stället för
+"Svalt", 9° ger "Svalt" i stället för "Kyligt". Tillbehörens gränser flyttades
+lika mycket, så mössan kommer vid 6° i stället för 8°, och de behåller därmed
+sitt förhållande till zonerna.
 
 **Paraplybeskedet** prövas i en bestämd ordning, där undantagen kommer först,
 och visas som första posten i listan "Ta med":
@@ -135,9 +141,9 @@ Listan säger alltså aldrig "paraply" när rådet är att låta paraplyet vara.
 `raincoat` utgår också posten om vindtätt ytterlager, eftersom en regnjacka
 redan är det. Allt räknas på de närmaste tolv timmarna.
 
-**Resten av tillbehören** styrs av separata trösklar: mössa under 8°, vantar
-under 5°, halsduk under 0°, vindtätt ytterlager från 8 m/s, vattentäta skor vid
-nedbörd under 14°, och solglasögon, solskydd och hatt vid UV-index 3, 5
+**Resten av tillbehören** styrs av separata trösklar: mössa under 6°, vantar
+under 3°, halsduk under -2°, vindtätt ytterlager från 8 m/s, vattentäta skor vid
+nedbörd under 12°, och solglasögon, solskydd och hatt vid UV-index 3, 5
 respektive 7.
 
 ## I dag och i morgon

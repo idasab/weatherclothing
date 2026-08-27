@@ -146,6 +146,28 @@ describe('adviseFor', () => {
     }
   });
 
+  it('lägger zongränserna två grader lägre än temperaturen antyder', () => {
+    // Skalan är medvetet justerad nedåt: vid 14° ska man inte få jacka.
+    const bandAt = (feels: number) => adviseFor(conditions({ apparentTemperature: feels })).band;
+
+    expect(bandAt(14)).toBe('Milt');
+    expect(bandAt(12)).toBe('Svalt');
+    expect(bandAt(7)).toBe('Kyligt');
+    expect(bandAt(18)).toBe('Varmt');
+    expect(bandAt(-3)).toBe('Minusgrader');
+  });
+
+  it('flyttar tillbehören lika mycket som zonerna', () => {
+    // Mössa gick förut vid 8°, nu vid 6°, så 7° ska vara barhuvat.
+    const labelsAt = (feels: number) =>
+      adviseFor(conditions({ apparentTemperature: feels })).extras.map((extra) => extra.label);
+
+    expect(labelsAt(7)).not.toContain('Mössa');
+    expect(labelsAt(5)).toContain('Mössa');
+    expect(labelsAt(4)).not.toContain('Vantar');
+    expect(labelsAt(2)).toContain('Vantar');
+  });
+
   it('väljer klädzon utifrån känns-som-temperaturen, inte termometern', () => {
     const advice = adviseFor(conditions({ temperature: 8, apparentTemperature: 1 }));
 

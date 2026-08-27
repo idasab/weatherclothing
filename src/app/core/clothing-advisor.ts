@@ -65,10 +65,14 @@ interface Band {
 /**
  * Zonerna utgår från känns-som-temperatur, inte termometern, eftersom vind och
  * fukt är det som avgör vad man faktiskt behöver på sig.
+ *
+ * Hela skalan justerades ner två grader efter att råden upplevts för varma: vid
+ * samma temperatur hamnar man nu ett snäpp lättare klädd. Tillbehörens gränser
+ * flyttades lika mycket, så de behåller sitt förhållande till zonerna.
  */
 const BANDS: Band[] = [
   {
-    below: -12,
+    below: -14,
     band: 'Extremkyla',
     summary: 'Täck all bar hud och håll utetiden kort.',
     layers: [
@@ -81,7 +85,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: -5,
+    below: -7,
     band: 'Sträng kyla',
     summary: 'Ordentlig vinterklädsel, flera lager.',
     layers: [
@@ -93,7 +97,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 0,
+    below: -2,
     band: 'Minusgrader',
     summary: 'Vinterjacka och täck händer och huvud.',
     layers: [
@@ -105,7 +109,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 5,
+    below: 3,
     band: 'Kallt',
     summary: 'Vadderad jacka och ett lager under.',
     layers: [
@@ -117,7 +121,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 10,
+    below: 8,
     band: 'Kyligt',
     summary: 'Jacka på, gärna med en tröja under.',
     layers: [
@@ -129,7 +133,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 15,
+    below: 13,
     band: 'Svalt',
     summary: 'Tunn jacka räcker en bit.',
     layers: [
@@ -140,7 +144,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 19,
+    below: 17,
     band: 'Milt',
     summary: 'Skjortväder med något tunt över.',
     layers: [
@@ -151,7 +155,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 24,
+    below: 22,
     band: 'Varmt',
     summary: 'Kortärmat hela dagen.',
     layers: [
@@ -161,7 +165,7 @@ const BANDS: Band[] = [
     ],
   },
   {
-    below: 29,
+    below: 27,
     band: 'Riktigt varmt',
     summary: 'Lätt och luftigt, håll dig i skuggan.',
     layers: [
@@ -311,19 +315,19 @@ function extrasFor(
     extras.push(rainGear);
   }
 
-  if (feels < 0) {
+  if (feels < -2) {
     extras.push({ icon: 'scarf', label: 'Halsduk' });
   }
-  if (feels < 5) {
-    extras.push({ icon: 'mittens', label: feels < -8 ? 'Tumvantar' : 'Vantar' });
+  if (feels < 3) {
+    extras.push({ icon: 'mittens', label: feels < -10 ? 'Tumvantar' : 'Vantar' });
   }
-  if (feels < 8) {
+  if (feels < 6) {
     extras.push({ icon: 'beanie', label: 'Mössa' });
   }
   if (input.windSpeed >= 8 && umbrella.level !== 'raincoat') {
     extras.push({ icon: 'jacket', label: 'Vindtätt ytterlager' });
   }
-  if (outlook.totalPrecipitation >= 0.3 && feels < 14) {
+  if (outlook.totalPrecipitation >= 0.3 && feels < 12) {
     extras.push({ icon: 'boots', label: 'Vattentäta skor' });
   }
   if (input.isDay && input.uvIndexMax >= 3) {
@@ -335,7 +339,7 @@ function extrasFor(
   if (input.uvIndexMax >= 7) {
     extras.push({ icon: 'sun-hat', label: 'Keps eller hatt' });
   }
-  if (feels >= 25) {
+  if (feels >= 23) {
     extras.push({ icon: 'bottle', label: 'Vattenflaska' });
   }
 
@@ -386,7 +390,7 @@ function notesFor(
     notes.push(`UV-index ${Math.round(input.uvIndexMax)} i dag — solen bränner snabbt.`);
   }
 
-  if (feels <= -10) {
+  if (feels <= -12) {
     notes.push('Bar hud kan frysa på några minuter i den här kylan.');
   }
 
