@@ -1,7 +1,7 @@
 {
   "name": "Vad ska jag ha på mig?",
-  "short_name": "Klädvädret",
-  "description": "Lokalt väder med råd om kläder och paraply.",
+  "short_name": "Kläder i väder",
+  "description": "Lokalt väder med råd om kläder och vad som är bra att ha med sig.",
   "lang": "sv",
   "start_url": ".",
   "display": "standalone",
