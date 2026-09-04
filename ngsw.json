@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1787815353224,
+  "timestamp": 1788517751097,
   "index": "/weatherclothing/index.html",
   "assetGroups": [
     {
@@ -18,7 +18,7 @@
         "/weatherclothing/manifest.webmanifest",
         "/weatherclothing/polyfills.4ec04badc2169dff.js",
         "/weatherclothing/runtime.c9c4e767748e9e95.js",
-        "/weatherclothing/styles.c71b7bedb76a1261.css"
+        "/weatherclothing/styles.7c8af2fc67e94d7b.css"
       ],
       "patterns": []
     },
@@ -57,17 +57,17 @@
   ],
   "hashTable": {
     "/weatherclothing/920.64422b7408d12650.js": "4f09e7fd8525eadad51712ef0a111f326464c2bf",
-    "/weatherclothing/assets/icons/icon-1024.png": "55813a93c061ca7e47817205aea1db1729df6a33",
-    "/weatherclothing/assets/icons/icon-180.png": "b570495dc5aef47ade6f494278a2d4a3e917e4da",
-    "/weatherclothing/assets/icons/icon-192.png": "63d11f4bf3a359b458d69a11344061af9b2d9924",
-    "/weatherclothing/assets/icons/icon-512.png": "e8bdbeaed6ba69717c66468e45ff909f4cef0dbf",
+    "/weatherclothing/assets/icons/icon-1024.png": "def6c95996f0bfa232ca1f14aa856bb9eb5c515e",
+    "/weatherclothing/assets/icons/icon-180.png": "7977f2688bd90bb74e5548a0ddd25e4e939929ca",
+    "/weatherclothing/assets/icons/icon-192.png": "9851661ca592ec435b977abc0b2e9da0a95cbc9b",
+    "/weatherclothing/assets/icons/icon-512.png": "29704c1dd7ddb6e85d55c5fb2838b7f28d9ac977",
     "/weatherclothing/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/weatherclothing/index.html": "b6e8af74d3f3ee79f8bdfe2da9f33f3b126c7c36",
+    "/weatherclothing/index.html": "301548eb7914c6d762ce8f131e6cd6dc1a13abb5",
     "/weatherclothing/main.098256395ddaa8e7.js": "511c5de38bb32da6140398198d8e545e40eccb6b",
     "/weatherclothing/manifest.webmanifest": "8ee888c3f1bae0b2e9896bf8b4ca405db575ccbf",
     "/weatherclothing/polyfills.4ec04badc2169dff.js": "f7a3976c5e45147f0225fc117bbefe8ce3ab1ed9",
     "/weatherclothing/runtime.c9c4e767748e9e95.js": "786916fd8a406284324373d80573eaf181974a66",
-    "/weatherclothing/styles.c71b7bedb76a1261.css": "59e963956f1039554e00292d162350870a28518c"
+    "/weatherclothing/styles.7c8af2fc67e94d7b.css": "8b5ae485993780e5e47cf120a29eaad6c654be56"
   },
   "navigationUrls": [
     {
