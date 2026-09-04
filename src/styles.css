@@ -16,8 +16,8 @@
   --accent: #6b7f96;
   /* Appikonens två färger. Används av gränssnittsikoner som ska höra ihop
      med ikonen, till skillnad från plaggikonerna som följer textfärgen. */
-  --icon-ink: #303338;
-  --icon-yellow: #f8da95;
+  --icon-ink: #2b2e33;
+  --icon-yellow: #f7d88a;
   --shadow: 0 14px 34px rgba(28, 30, 34, 0.08);
 }
 

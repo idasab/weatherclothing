@@ -2,24 +2,18 @@ import SwiftUI
 import WidgetKit
 
 /// Låst till ljust läge. Den gula bottnen är samma som appikonens, så widgeten
-/// och ikonen hör ihop på hemskärmen. Ändras ikonens gula i
-/// tools/generate-icons.py bör de här två värdena följa med.
+/// och ikonen hör ihop på hemskärmen. Ikonen är helt platt, så bottnen här är
+/// en enda färg utan gradient. Ändras ikonens gula i tools/generate-icons.py
+/// bör värdet följa med.
 private enum Palette {
-    static let backgroundTop = Color(red: 0.973, green: 0.855, blue: 0.573)
-    static let backgroundBottom = Color(red: 0.910, green: 0.749, blue: 0.439)
-
-    static let background = LinearGradient(
-        colors: [backgroundTop, backgroundBottom],
-        startPoint: .top,
-        endPoint: .bottom
-    )
+    static let background = Color(red: 0.969, green: 0.847, blue: 0.541)
 
     static let ink = Color(red: 0.110, green: 0.118, blue: 0.133)
     // Något mörkare än i appen: det gula är ljusare än off-whiten och tål mer.
     static var muted: Color { ink.opacity(0.66) }
     static var faint: Color { ink.opacity(0.50) }
     static let hairline = Color(red: 0.110, green: 0.118, blue: 0.133).opacity(0.16)
-    /// Ljus bricka bakom klädposterna, samma trick som glasens blänk i ikonen.
+    /// Ljus bricka bakom klädposterna, så de läser som poster mot det gula.
     static let chip = Color.white.opacity(0.42)
 }
 

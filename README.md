@@ -390,9 +390,10 @@ På en Mac, efter `npx cap add ios`:
   timraden visade regnrisk från en procent medan appen kräver tio; och att
   "Tunn jacka eller kofta" är bredare än en liten widget. Alla fyra är rättade.
 - **Gul botten som ikonen.** Widgetens bakgrund är samma ljusa gula som
-  appikonen, definierad i `Palette` överst i `KladvadretWidget.swift`. Ändrar du
-  ikonens färg i [tools/generate-icons.py](tools/generate-icons.py) behöver de
-  två färgvärdena där följa med, annars glider ikon och widget isär.
+  appikonen — en enda platt färg, eftersom ikonen inte har någon gradient.
+  Värdet står i `Palette` överst i `KladvadretWidget.swift`. Ändrar du ikonens
+  färg i [tools/generate-icons.py](tools/generate-icons.py) behöver det följa
+  med, annars glider ikon och widget isär.
 - **Logiken är kopierad, inte delad.** Trösklarna i `Advice.swift` speglar
   `clothing-advisor.ts`. Ändrar du råden i webbappen behöver du ändra dem på båda
   ställena — de enhetstestade värdena i TypeScript är originalet.
@@ -418,13 +419,15 @@ app i App Store, men i praktiken samma upplevelse på telefonen.
 - **Ortsökningen** är reservvägen när positionen nekas eller inte finns, och
   fungerar även som vanlig sökfunktion.
 - **Appikonen genereras** av [tools/generate-icons.py](tools/generate-icons.py),
-  som ritar motivet direkt till PNG utan bildbibliotek. Motivet är solglasögon i
-  legostil: platta, nästan kvadratiska glas, rak brygga och raka skalmstumpar.
-  Kör `python tools/generate-icons.py` efter en ändring, så skrivs alla fyra
-  storlekar om: 180 för hemskärmen, 192 och 512 för manifestet och 1024 för
-  Xcode. Färger och geometri ligger som konstanter överst i filen, och
-  `GLINT_STRENGTH` sätter du till 0.6 om du vill ha tillbaka det vita blänket i
-  glasen. Ikonerna sparas utan alfakanal, eftersom genomskinlighet blir svart på
-  iOS.
+  som ritar motivet direkt till PNG utan bildbibliotek. Motivet är en legogubbes
+  ansikte: platta, nästan kvadratiska solglasögon på en genomgående balk som är
+  både brygga och skalm, och ett streckleende under. Allt är helt platt — en
+  enda gul bottenfärg och en enda grafitton, inga gradienter, skuggor eller
+  reflexer. Kör `python tools/generate-icons.py` efter en ändring, så skrivs
+  alla fyra storlekar om: 180 för hemskärmen, 192 och 512 för manifestet och
+  1024 för Xcode. Färger och geometri ligger som konstanter överst i filen;
+  `MOUTH_CENTER` tillsammans med glasögonens `LENS_TOP`/`LENS_BOTTOM` styr
+  mellanrummet mellan mun och glasögon, som är en tiondel av ikonens höjd.
+  Ikonerna sparas utan alfakanal, eftersom genomskinlighet blir svart på iOS.
 - **Alltid ljust läge.** Paletten är låst till den ljusa, och `color-scheme:
   light` gör att systemet inte ritar mörka formulärkontroller i den.
