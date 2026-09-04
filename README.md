@@ -429,5 +429,11 @@ app i App Store, men i praktiken samma upplevelse på telefonen.
   `MOUTH_CENTER` tillsammans med glasögonens `LENS_TOP`/`LENS_BOTTOM` styr
   mellanrummet mellan mun och glasögon, som är en tiondel av ikonens höjd.
   Ikonerna sparas utan alfakanal, eftersom genomskinlighet blir svart på iOS.
+- **Kanterna räknas analytiskt.** Varje form har en avståndsfunktion, och
+  pixelns täckning faller ut ur avståndet till randen. Det ger full åttabitars
+  precision i kanten — 136 toner i 180-versionen. Skriptet ritade tidigare med
+  3x3 delprover per pixel, vilket bara kan ge nio täckningsnivåer, och då blev
+  kurvorna synligt grumliga eftersom de hade så få steg att tona genom. Lägg
+  därför inte tillbaka en supersamplande rasterisering.
 - **Alltid ljust läge.** Paletten är låst till den ljusa, och `color-scheme:
   light` gör att systemet inte ritar mörka formulärkontroller i den.

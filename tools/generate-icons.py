@@ -4,6 +4,13 @@ Motivet är en legogubbes ansikte: platta, nästan kvadratiska solglasögon och
 ett streckleende i grafit mot en helt platt gul botten. Inga gradienter, inga
 skuggor och inga reflexer — formen bär motivet, och det är hela poängen.
 
+Kanterna beräknas analytiskt. Varje form har en avståndsfunktion som säger hur
+långt en punkt ligger från formens rand, negativt inuti och positivt utanför,
+och ur avståndet faller pixelns täckning ut direkt. Det ger full åttabitars
+precision i kanten. Alternativet — att skjuta ett rutnät av delprover per pixel
+— ger bara så många täckningsnivåer som det finns delprover, och med 3x3 blev
+kurvorna synligt grumliga eftersom de bara hade nio steg att tona genom.
+
 Körs med `python tools/generate-icons.py` och skriver över filerna i
 src/assets/icons. Inga beroenden utöver standardbiblioteket.
 """
@@ -19,9 +26,6 @@ SIZES = (180, 192, 512, 1024)
 
 GRAPHITE = (28, 30, 34)
 YELLOW = (247, 216, 138)
-
-# Supersampling per axel. Ikonen har hårda kanter, så det behövs för mjuka linjer.
-SAMPLES = 3
 
 # Glasögonen: platta, nästan kvadratiska glas och en enda balk från kant till
 # kant som är både brygga och skalm. Enkelheten är motivet.
@@ -42,40 +46,53 @@ MOUTH_HALF_WIDTH = 0.022
 MOUTH_MIN_DY = 0.085
 
 
-def in_rounded_rect(x, y, x0, x1, y0, y1, radius):
-    if not (x0 <= x <= x1 and y0 <= y <= y1):
-        return False
-    radius = min(radius, (x1 - x0) / 2, (y1 - y0) / 2)
-    cx = min(max(x, x0 + radius), x1 - radius)
-    cy = min(max(y, y0 + radius), y1 - radius)
-    return (x - cx) ** 2 + (y - cy) ** 2 <= radius * radius
+def sd_rounded_rect(x, y, x0, x1, y0, y1, radius):
+    """Avstånd till en rundad rektangels rand. Negativt inuti."""
+    center_x, center_y = (x0 + x1) / 2, (y0 + y1) / 2
+    half_w, half_h = (x1 - x0) / 2, (y1 - y0) / 2
+    radius = min(radius, half_w, half_h)
+
+    qx = abs(x - center_x) - (half_w - radius)
+    qy = abs(y - center_y) - (half_h - radius)
+
+    outside = math.hypot(max(qx, 0.0), max(qy, 0.0))
+    inside = min(max(qx, qy), 0.0)
+    return outside + inside - radius
 
 
-def in_lens(x, y, lens):
-    return in_rounded_rect(x, y, lens[0], lens[1], LENS_TOP, LENS_BOTTOM, LENS_CORNER)
+def sd_lens(x, y, lens):
+    return sd_rounded_rect(x, y, lens[0], lens[1], LENS_TOP, LENS_BOTTOM, LENS_CORNER)
 
 
-def in_glasses(x, y):
-    """Två nästan kvadratiska glas på en genomgående balk."""
-    if in_rounded_rect(x, y, BAR_LEFT, BAR_RIGHT, BAR_TOP, BAR_BOTTOM, BAR_CORNER):
-        return True
-    return in_lens(x, y, LEFT_LENS) or in_lens(x, y, RIGHT_LENS)
-
-
-def in_mouth(x, y):
-    """Legogubbens streckleende: bara bågens nedre del ritas."""
+def sd_mouth(x, y):
+    """Streckleendet: en cirkelring som kapas av så bara nedre delen blir kvar."""
     center_x, center_y = MOUTH_CENTER
     dy = y - center_y
-    if dy < MOUTH_MIN_DY:
-        return False
-    distance = math.hypot(x - center_x, dy)
-    return abs(distance - MOUTH_RADIUS) <= MOUTH_HALF_WIDTH
+    ring = abs(math.hypot(x - center_x, dy) - MOUTH_RADIUS) - MOUTH_HALF_WIDTH
+    # Snittet med halvplanet dy >= MOUTH_MIN_DY ger bågens raka avslut.
+    return max(ring, MOUTH_MIN_DY - dy)
 
 
-def sample(x, y):
-    if in_glasses(x, y) or in_mouth(x, y):
+def signed_distance(x, y):
+    """Avstånd till hela motivets rand. Union av formerna är minsta avståndet."""
+    return min(
+        sd_rounded_rect(x, y, BAR_LEFT, BAR_RIGHT, BAR_TOP, BAR_BOTTOM, BAR_CORNER),
+        sd_lens(x, y, LEFT_LENS),
+        sd_lens(x, y, RIGHT_LENS),
+        sd_mouth(x, y),
+    )
+
+
+def sample(x, y, size):
+    """Pixelns färg. En pixel är 1/size breda, och täckningen följer avståndet."""
+    coverage = 0.5 - signed_distance(x, y) * size
+    if coverage <= 0.0:
+        return YELLOW
+    if coverage >= 1.0:
         return GRAPHITE
-    return YELLOW
+    return tuple(
+        round(YELLOW[i] + (GRAPHITE[i] - YELLOW[i]) * coverage) for i in range(3)
+    )
 
 
 def chunk(tag, payload):
@@ -89,23 +106,12 @@ def chunk(tag, payload):
 
 def render(size):
     rows = bytearray()
-    step = 1.0 / (size * SAMPLES)
 
     for py in range(size):
         rows.append(0)  # filtertyp None
+        y = (py + 0.5) / size
         for px in range(size):
-            red = green = blue = 0
-            for sy in range(SAMPLES):
-                for sx in range(SAMPLES):
-                    color = sample(
-                        (px * SAMPLES + sx + 0.5) * step,
-                        (py * SAMPLES + sy + 0.5) * step,
-                    )
-                    red += color[0]
-                    green += color[1]
-                    blue += color[2]
-            count = SAMPLES * SAMPLES
-            rows += bytes((red // count, green // count, blue // count))
+            rows += bytes(sample((px + 0.5) / size, y, size))
 
     return bytes(rows)
 
