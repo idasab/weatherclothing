@@ -27,23 +27,40 @@ SIZES = (180, 192, 512, 1024)
 GRAPHITE = (28, 30, 34)
 YELLOW = (247, 216, 138)
 
-# Glasögonen: platta, nästan kvadratiska glas och en enda balk från kant till
-# kant som är både brygga och skalm. Enkelheten är motivet.
-LENS_TOP, LENS_BOTTOM = 0.325, 0.615
-LEFT_LENS = (0.150, 0.455)
-RIGHT_LENS = (0.545, 0.850)
-LENS_CORNER = 0.085
-BAR_TOP, BAR_BOTTOM = 0.432, 0.478
-BAR_LEFT, BAR_RIGHT = 0.030, 0.970
-BAR_CORNER = 0.023
+# Geometrin anges i hela pixlar vid 180, alltså hemskärmens storlek, och räknas
+# om till andelar av bredden. Skälet är att en rak kant som hamnar mitt mellan
+# två pixlar blir en halvtonad linje längs hela kanten, och det läser som
+# suddigt. Ligger kanten på en pixelgräns blir pixlarna på var sida helt
+# täckta respektive helt otäckta, alltså knivskarpa. Rastret går bara att
+# träffa i en storlek åt gången — 512 och 1024 får fraktionella kanter, men där
+# är en halv pixel för liten att se.
+GRID = 180
 
-# Munnen är nedre delen av en cirkelbåge. Mellanrummet upp till glasögonen är
-# 0,100 av ikonens höjd — glasögonen sitter halva mellanrummet över mitten och
-# munnen halva under, så motivet stannar centrerat.
-MOUTH_CENTER = (0.500, 0.630)
-MOUTH_RADIUS = 0.155
-MOUTH_HALF_WIDTH = 0.022
-MOUTH_MIN_DY = 0.085
+
+def frac(pixels):
+    return pixels / GRID
+
+
+# Glasögonen: platta, nästan kvadratiska glas — 55 x 53 pixlar vid 180 — och en
+# enda balk från kant till kant som är både brygga och skalm.
+LENS_TOP, LENS_BOTTOM = frac(58), frac(111)
+LEFT_LENS = (frac(27), frac(82))
+# Spegelvänt så att motivet är exakt symmetriskt kring mitten.
+RIGHT_LENS = (frac(GRID - 82), frac(GRID - 27))
+LENS_CORNER = frac(15)
+BAR_TOP, BAR_BOTTOM = frac(78), frac(86)
+BAR_LEFT, BAR_RIGHT = frac(5), frac(GRID - 5)
+# Halva balkhöjden ger helt runda ändar på balken.
+BAR_CORNER = frac(4)
+
+# Munnen är nedre delen av en cirkelbåge. Bågens översta punkt ligger 18 pixlar
+# under glasögonen, alltså en tiondel av ikonens höjd — det mellanrum som
+# valdes. Radien i hela pixlar gör dessutom bågens nedersta del skarp, där den
+# är som mest vågrät.
+MOUTH_CENTER = (0.500, frac(113))
+MOUTH_RADIUS = frac(28)
+MOUTH_HALF_WIDTH = frac(4)
+MOUTH_MIN_DY = frac(16)
 
 
 def sd_rounded_rect(x, y, x0, x1, y0, y1, radius):

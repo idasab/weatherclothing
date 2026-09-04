@@ -435,5 +435,15 @@ app i App Store, men i praktiken samma upplevelse på telefonen.
   3x3 delprover per pixel, vilket bara kan ge nio täckningsnivåer, och då blev
   kurvorna synligt grumliga eftersom de hade så få steg att tona genom. Lägg
   därför inte tillbaka en supersamplande rasterisering.
+- **Geometrin ligger på 180-rastret.** Måtten anges i hela pixlar vid 180,
+  alltså hemskärmens storlek, via hjälpfunktionen `frac`. En rak kant som
+  hamnar mitt mellan två pixlar blir annars en halvtonad linje längs hela
+  kanten och läser som suddig — glasögonens överkant låg tidigare på 58,50 px
+  och gjorde precis det. Nu är de raka kanterna knivskarpa i 180-versionen och
+  mellantonerna finns bara på kurvorna, där de hör hemma: 320 pixlar av 32 400
+  mot tidigare 580. Rastret går bara att träffa i en storlek åt gången, så 512
+  och 1024 får fraktionella kanter, men där är en halv pixel för liten att se.
+  Håll `RIGHT_LENS` speglat mot `LEFT_LENS` om du ändrar måtten — motivet är
+  exakt symmetriskt kring mitten, verifierat till noll avvikande pixlar.
 - **Alltid ljust läge.** Paletten är låst till den ljusa, och `color-scheme:
   light` gör att systemet inte ritar mörka formulärkontroller i den.
