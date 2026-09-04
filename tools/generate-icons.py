@@ -17,7 +17,7 @@ OUT = Path(__file__).resolve().parent.parent / "src" / "assets" / "icons"
 # 180 för hemskärmen, 192 och 512 för manifestet, 1024 för Xcode.
 SIZES = (180, 192, 512, 1024)
 
-GRAPHITE = (43, 46, 51)
+GRAPHITE = (28, 30, 34)
 YELLOW = (247, 216, 138)
 
 # Supersampling per axel. Ikonen har hårda kanter, så det behövs för mjuka linjer.
