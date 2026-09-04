@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1788520770884,
+  "timestamp": 1788521163430,
   "index": "/weatherclothing/index.html",
   "assetGroups": [
     {
@@ -57,10 +57,10 @@
   ],
   "hashTable": {
     "/weatherclothing/920.64422b7408d12650.js": "4f09e7fd8525eadad51712ef0a111f326464c2bf",
-    "/weatherclothing/assets/icons/icon-1024.png": "784b95ff8dec90092c7963aa2178244081455b77",
-    "/weatherclothing/assets/icons/icon-180.png": "86f2698fbff125645d1b2331fea80a59d0195f88",
-    "/weatherclothing/assets/icons/icon-192.png": "350d071497f69147f8b0422f051d12d31c53c602",
-    "/weatherclothing/assets/icons/icon-512.png": "1e9adb845ddcd665a0f7bc17af372ee440446e67",
+    "/weatherclothing/assets/icons/icon-1024.png": "ee28f7d56587e61f2001615a3fe07c06b1679fb2",
+    "/weatherclothing/assets/icons/icon-180.png": "ad6c9f150f6f813b2bfe549d154b82e88aa4d755",
+    "/weatherclothing/assets/icons/icon-192.png": "373445b1df81a0b15124a0a6eb203428c7794e3a",
+    "/weatherclothing/assets/icons/icon-512.png": "9f0588332cd8a74116efb77f402e067b29eae677",
     "/weatherclothing/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
     "/weatherclothing/index.html": "8f11f899ba88e81c199e067556260705123e2a6e",
     "/weatherclothing/main.098256395ddaa8e7.js": "511c5de38bb32da6140398198d8e545e40eccb6b",
