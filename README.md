@@ -251,7 +251,7 @@ stora blir de grus i timstripen. Nuvarande värden är radie 2,7 och färgen
 
 Gränssnittsikoner som ska höra ihop med appikonen — som kartnålen i
 platsknappen — använder tokens `--icon-ink` och `--icon-yellow`, alltså ikonens
-grafit och gult. Plaggikonerna följer i stället textfärgen.
+svart och gult. Plaggikonerna följer i stället textfärgen.
 
 Vilken symbol en vädersituation får bestäms i
 [weather-codes.ts](src/app/core/weather-codes.ts) för Open-Meteos WMO-koder och
@@ -422,7 +422,7 @@ app i App Store, men i praktiken samma upplevelse på telefonen.
   som ritar motivet direkt till PNG utan bildbibliotek. Motivet är en legogubbes
   ansikte: platta, nästan kvadratiska solglasögon på en genomgående balk som är
   både brygga och skalm, och ett streckleende under. Allt är helt platt — en
-  enda gul bottenfärg och en enda grafitton, inga gradienter, skuggor eller
+  enda gul bottenfärg och ren svart, inga gradienter, skuggor eller
   reflexer. Kör `python tools/generate-icons.py` efter en ändring, så skrivs
   alla fyra storlekar om: 180 för hemskärmen, 192 och 512 för manifestet och
   1024 för Xcode. Färger och geometri ligger som konstanter överst i filen;

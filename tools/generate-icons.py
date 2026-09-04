@@ -1,7 +1,7 @@
 """Genererar appens ikoner i alla storlekar.
 
 Motivet är en legogubbes ansikte: platta, nästan kvadratiska solglasögon och
-ett streckleende i grafit mot en helt platt gul botten. Inga gradienter, inga
+ett streckleende i svart mot en helt platt gul botten. Inga gradienter, inga
 skuggor och inga reflexer — formen bär motivet, och det är hela poängen.
 
 Kanterna beräknas analytiskt. Varje form har en avståndsfunktion som säger hur
@@ -24,7 +24,7 @@ OUT = Path(__file__).resolve().parent.parent / "src" / "assets" / "icons"
 # 180 för hemskärmen, 192 och 512 för manifestet, 1024 för Xcode.
 SIZES = (180, 192, 512, 1024)
 
-GRAPHITE = (28, 30, 34)
+BLACK = (0, 0, 0)
 YELLOW = (247, 216, 138)
 
 # Geometrin anges i hela pixlar vid 180, alltså hemskärmens storlek, och räknas
@@ -106,9 +106,9 @@ def sample(x, y, size):
     if coverage <= 0.0:
         return YELLOW
     if coverage >= 1.0:
-        return GRAPHITE
+        return BLACK
     return tuple(
-        round(YELLOW[i] + (GRAPHITE[i] - YELLOW[i]) * coverage) for i in range(3)
+        round(YELLOW[i] + (BLACK[i] - YELLOW[i]) * coverage) for i in range(3)
     )
 
 

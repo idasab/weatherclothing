@@ -16,9 +16,10 @@
   --accent: #6b7f96;
   /* Appikonens två färger. Används av gränssnittsikoner som ska höra ihop
      med ikonen, till skillnad från plaggikonerna som följer textfärgen.
-     Ikonens grafit råkar nu ha samma värde som --text, men de är skilda
-     tokens med skilda syften — ändras ikonen ska --text inte följa med. */
-  --icon-ink: #1c1e22;
+     Ikonen är ren svart, och därför är den här token det också — det är den
+     enda rena svarta i paletten, och den hör bara till ikonen. Texten är och
+     ska förbli --text, som är mjukare. */
+  --icon-ink: #000000;
   --icon-yellow: #f7d88a;
   --shadow: 0 14px 34px rgba(28, 30, 34, 0.08);
 }
